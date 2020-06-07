@@ -197,6 +197,10 @@ bool AutomatoIdent(Reserved ident, std::string* result){
         *result = "simb_real";
         return true;
     }
+	else if(ident.w.compare("const") == 0){
+        *result = "simb_const";
+        return true;
+    }
     else{
         *result = "id";
         return true;

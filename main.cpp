@@ -19,7 +19,7 @@ string msg_erro = "";
 
 queue<Node> tabela_simbolos;
 
-void token(string word);
+void token(string);
 
 int main(int argc, char *argv[]) 
 { 
@@ -121,13 +121,10 @@ int main(int argc, char *argv[])
         file_out << "erro na abertura do arquivo" << endl; 
     }
 
-    //tabela_simbolos.showList();
-
     file_out.close();
 
     return 0;
 } 
-
 
 void token(string word)
 {
