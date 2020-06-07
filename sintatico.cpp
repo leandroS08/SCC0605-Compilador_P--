@@ -249,7 +249,6 @@ bool ProcedimentoCorpoProc(queue<Node>& tabela)
     cout << "Proc Corpo Procedimento" << endl;
 }
 
-
 bool ProcedimentoComandos(queue<Node>& tabela)
 {
     cout << "Entrando Proc Comandos" << endl;

@@ -41,22 +41,23 @@
 
 1. <programa> ::= program ident ; <corpo> .
 
-2. <corpo> ::= 	const ident = numero_int ; <dc_c> <dc_v> <dc_p> begin <comandos> end
-		| const ident = numero_real ; <dc_c> <dc_v> <dc_p> begin <comandos> end
+2. <corpo> ::= 	const ident = <tipo_var> ; <dc_c> <dc_v> <dc_p> begin <comandos> end
 		| var <variaveis> : <tipo_var> ; <dc_c> <dc_v> <dc_p> begin <comandos> end
 		| procedure ident <parametros> ; <corpo_p> <dc_c> <dc_v> <dc_p> begin <comandos> end
 		| begin <comandos> end
 
-4. <dc_c> ::= 	const ident = numero_int ; <dc_c> 
-		| const ident = numero_real ; <dc_c> 
+4. <dc_c> ::= 	const ident = <tipo_var> ; <dc_c> 
 		| λ
 
-5. <dc_v> ::= 	var <variaveis> : real ; <dc_v> 
-		| var <variaveis> : integer ; <dc_v> 
+5. <dc_v> ::= 	var <variaveis> : <tipo_var> ; <dc_v> 
 		| λ
 
-7. <variaveis> ::= ident  
-		   | ident , <variaveis> 
+6. <tipo_var> ::= real | integer
+
+7. <variaveis> ::= ident  <var>
+		
+
+<var> ::= λ | , <varivaeis>
 
 
 9. <dc_p> ::= 	procedure ident ; <corpo_p> <dc_p> 
