@@ -1,0 +1,9 @@
+program program;
+var x@a:integer;
+{comentario aleatorio 5 @ _ asa}
+begin
+	1x:=1.578;
+	while(x*<=3) do
+		if$ (x<>2) then
+			x::=x+12.5%1;
+end.

@@ -1,0 +1,6 @@
+programa p--;
+{entrada}
+var a:integer;
+begin
+readd(a,@,1,1a23);
+end.

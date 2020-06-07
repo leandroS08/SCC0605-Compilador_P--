@@ -1,0 +1,38 @@
+program, simb_program
+program, simb_program
+;, simb_pv
+var, simb_var
+x@a, erro lexico: identificador irregular
+:, simb_dp
+integer, simb_integer
+;, simb_pv
+begin, simb_begin
+1x, erro lexico: número irregular
+:=, simb_atri
+1.578, num_real
+;, simb_pv
+while, simb_while
+(, simb_apar
+x, id
+*, simb_mult
+<=, simb_meig
+3, num_int
+), simb_fpar
+do, simb_do
+if$, erro lexico: identificador irregular
+(, simb_apar
+x, id
+<>, simb_dif
+2, num_int
+), simb_fpar
+then, simb_then
+x, id
+:, simb_dp
+:, simb_dp
+=, simb_igual
+x, id
++, simb_soma
+12.5%1, erro lexico: número irregular
+;, simb_pv
+end, simb_end
+., simb_pont
