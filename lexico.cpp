@@ -222,7 +222,14 @@ bool ErroLexico(int erro, std::string* msg_erro, bool* flag){
         case 3:
             *msg_erro = "erro lexico: caractere não permitido";
         break;
+	 case 4:
+            *msg_erro = "erro lexico: tamanho incorreto de variavél";    
+        break;
 
+        case 5:
+            *msg_erro = "erro lexico: comentario inserido incorretamente";    
+        break;
+        
         *msg_erro = "erro lexico inesperado";
     }
 }
