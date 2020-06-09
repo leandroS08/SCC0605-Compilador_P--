@@ -5,6 +5,8 @@ procedure nomep(x: real);
 var a, c: integer;
 begin
 read(c, a);
+
+
 if a<x+c then
 begin
 a:= c+x;
