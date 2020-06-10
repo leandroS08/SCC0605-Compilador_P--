@@ -87,18 +87,23 @@
 
 
 FALTAAAA O FOORRR
-19. <comandos> ::= 	read ( <variaveis> ) ; <comandos>
-			| write ( <variaveis> ) ; <comandos>
-			| while ( <op_un> <fator> <mais_fatores> <outros_termos> <relacao> <expressao> ) do <cmd> ; <comandos>
-			| if <op_un> <fator> <mais_fatores> <outros_termos> <relacao> <expressao> then <cmd> ; <comandos>
-			| if <op_un> <fator> <mais_fatores> <outros_termos> <relacao> <expressao> then <cmd> else <cmd> ; <comandos>
-			| ident := <expressão> ; <comandos>
-			| ident <lista_arg> ; <comandos>
-			| begin <comandos> end ; <comandos>
-			| λ
+18. <pfalsa> ::= else <cmd> | λ
+19. <comandos> ::= <cmd> ; <comandos> | λ
+
+20. <cmd> ::= read ( <variaveis> ) |
+ write ( <variaveis> ) |
+ while ( <condicao> ) do <cmd> |
+ if <condicao> then <cmd> <pfalsa> |
+ ident := <expressão> |
+ ident <lista_arg> |
+ begin <comandos> end
 
 
+21. <condicao> ::= <expressao> <relacao> <expressao>
+22. <relacao> ::= = | <> | >= | <= | > | <
+23. <expressao> ::= <termo> <outros_termos>
 
+27. <termo> ::= <op_un> <fator> <mais_fatores>
 
 25. <outros_termos> ::= <op_ad> <termo> <outros_termos>
 			| λ

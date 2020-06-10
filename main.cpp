@@ -37,6 +37,8 @@ int main(int argc, char *argv[])
     {
         while (! file_in.eof() ) // Verifica se nao esta no final do arquivo
         {
+            cout << "\n********* ANALISE LEXICA *********" << endl;
+            
             while(file_in >> word_aux) // Itera sobre o arquivo, palavra por palavra
             {
                 //cout << "Original: " << word_aux << endl;

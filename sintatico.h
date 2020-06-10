@@ -31,24 +31,27 @@
 
     bool ProcedimentoComandos(queue<Node>&);
 
+    bool ProcedimentoRead(queue<Node>&);
 
-    bool ProcedimentoCondicao(queue<Node>& );
+    bool ProcedimentoWrite(queue<Node>&);
 
-    bool ProcedimentoFator(queue<Node>& );
-    
+    bool ProcedimentoWhile(queue<Node>&);
+
     bool ProcedimentoFor(queue<Node>&);
     
     bool ProcedimentoIf(queue<Node>&);
 
-    bool ProcedimentoWhile(queue<Node>&);
+    bool ProcedimentoCondicao(queue<Node>&);
 
-    bool ProcedimentoWrite(queue<Node>&);
+    bool ProcedimentoExpressao(queue<Node>&);
 
-    bool ProcedimentoRead(queue<Node>&);
+    bool ProcedimentoTermo(queue<Node>&);
 
+    bool ProcedimentoOutrosTermos(queue<Node>&);
 
+    bool ProcedimentoFator(queue<Node>&);
 
-
-
+    bool ProcedimentoMaisFatores(queue<Node>&);
+    
     
 #endif

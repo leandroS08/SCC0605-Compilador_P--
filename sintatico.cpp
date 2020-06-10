@@ -13,17 +13,13 @@ void printQueue(queue<Node> q)
         cout << q.front().getWord() << " ::: " << q.front().getToken() << endl;
         q.pop();
     }
-    cout<<endl;
+    cout << endl;
 }
 
 bool ProcedimentoASD(queue<Node> tabela)
-{   
-    cout << "\n\n Fila \n" << endl;
-    printQueue(tabela);
-    cout << "\n\n" << endl;
+{
+    cout << "\n********* ANALISE SINTATICA *********" << endl;
 
-    cout << "Entrando Proc ASD" << endl;
-    
     Node iter = tabela.front();
     tabela.pop();
 
@@ -51,21 +47,32 @@ bool ProcedimentoASD(queue<Node> tabela)
     if (iter.getToken().compare("simb_pont") == 0)
     {
         tabela.pop();
+
         if (tabela.empty())
         {
+            cout << "Sucesso! Todas as cadeias processadas" << endl;
             return true;
-            cout << "Saindo Proc ASD" << endl;
-        } 
-        //else ErroSintatico();
+            
+        }
+        else 
+        {
+            cout << "Codigo com erro, cadeias não processadas" << endl;
+            printQueue(tabela);
+            //ErroSintatico();
+        }
     }
+    else
+    {
+        cout << "Codigo com erro, cadeias não processadas" << endl;
+        printQueue(tabela);
+        /* code */
+    }
+    
     //else ErroSintatico();
-
-    printQueue(tabela);
 }
 
-bool ProcedimentoCorpo(queue<Node>& tabela)
+bool ProcedimentoCorpo(queue<Node> &tabela)
 {
-    cout << "Entrando Proc Corpo" << endl;
     Node iter = tabela.front();
 
     if (iter.getToken().compare("simb_const") == 0)
@@ -90,23 +97,21 @@ bool ProcedimentoCorpo(queue<Node>& tabela)
     //else ErroSintatico();
 
     iter = tabela.front();
-    if (iter.getToken().compare("simb_end") == 0) 
+    if (iter.getToken().compare("simb_end") == 0)
     {
         tabela.pop();
-        cout << "Saindo Proc Corpo" << endl;
-        return true;  
+        return true;
     }
     //else ErroSintatico();
 }
 
-bool ProcedimentoDConst(queue<Node>& tabela)
+bool ProcedimentoDConst(queue<Node> &tabela)
 {
-    Node iter = tabela.front();  
+    Node iter = tabela.front();
     while (iter.getToken().compare("simb_const") == 0)
     {
-        cout << "Entrando Proc Declaracao de Constante" << endl;
         tabela.pop();
-    
+
         iter = tabela.front();
         if (iter.getToken().compare("id") == 0)
         {
@@ -120,14 +125,13 @@ bool ProcedimentoDConst(queue<Node>& tabela)
                 iter = tabela.front();
                 if (iter.getToken().compare("num_int") == 0 || iter.getToken().compare("num_real") == 0) // Conversar
                 {
-                    tabela.pop();
+                    ProcedimentoTipoVar(tabela);
                     //cout << "Comi " << iter.getWord() << " ::: " << iter.getToken() << endl;
 
                     iter = tabela.front();
                     if (iter.getToken().compare("simb_pv") == 0)
                     {
                         tabela.pop();
-                        cout << "Saindo Proc Declaracao de Constante" << endl;
 
                         iter = tabela.front();
                         if (iter.getToken().compare("simb_var") == 0)
@@ -138,7 +142,7 @@ bool ProcedimentoDConst(queue<Node>& tabela)
 
                         else if (iter.getToken().compare("simb_begin") == 0)
                             return true;
-                        
+
                         // else ErroSintatico()
                     }
                 }
@@ -146,15 +150,14 @@ bool ProcedimentoDConst(queue<Node>& tabela)
             //else ErroSintatico();
         }
         //else ErroSintatico();
-    } 
+    }
 }
 
-bool ProcedimentoDVar(queue<Node>& tabela)
+bool ProcedimentoDVar(queue<Node> &tabela)
 {
     Node iter = tabela.front();
     while (iter.getToken().compare("simb_var") == 0)
     {
-        cout << "Entrando Proc Declaracao de Variavel" << endl;
         tabela.pop();
 
         ProcedimentoVariaveis(tabela);
@@ -173,7 +176,6 @@ bool ProcedimentoDVar(queue<Node>& tabela)
                 if (iter.getToken().compare("simb_pv") == 0)
                 {
                     tabela.pop();
-                    cout << "Saindo Declaracao de Variavel" << endl;
 
                     iter = tabela.front();
                     if (iter.getToken().compare("simb_const") == 0) //Nao tenho ctz disso
@@ -181,7 +183,7 @@ bool ProcedimentoDVar(queue<Node>& tabela)
                     else if (iter.getToken().compare("simb_procedure") == 0)
                         ProcedimentoDProc(tabela);
                     else if (iter.getToken().compare("simb_begin") == 0)
-                            return true;
+                        return true;
                 }
             }
         }
@@ -189,45 +191,46 @@ bool ProcedimentoDVar(queue<Node>& tabela)
     }
 }
 
-bool ProcedimentoDProc(queue<Node>& tabela){
-    cout << "Entrando Proc Declaracao de Procedimento" << endl;
+bool ProcedimentoDProc(queue<Node> &tabela)
+{
     Node iter = tabela.front();
 
     // Nao precisa necessariamente entrar nesse while
-    while (iter.getToken().compare("simb_procedure") == 0){
+    while (iter.getToken().compare("simb_procedure") == 0)
+    {
         tabela.pop();
         iter = tabela.front();
 
-        if (iter.getToken().compare("id") == 0){
+        if (iter.getToken().compare("id") == 0)
+        {
             tabela.pop();
             ProcedimentoParametros(tabela);
             iter = tabela.front();
 
-            if (iter.getToken().compare("simb_pv") == 0){
+            if (iter.getToken().compare("simb_pv") == 0)
+            {
                 tabela.pop();
                 iter = tabela.front();
-                cout << "Saindo Proc Declaracao de Procedimento" << endl;
-                if(iter.getToken().compare("simb_var") == 0){
+                if (iter.getToken().compare("simb_var") == 0)
+                {
                     ProcedimentoCorpoProc(tabela);
-                 }
-                 //else erro
+                }
+                //else erro
             }
             //else erro
         }
         //else erro
-    }       
+    }
 }
 
-bool ProcedimentoVariaveis(queue<Node>& tabela)
+bool ProcedimentoVariaveis(queue<Node> &tabela)
 {
     Node iter = tabela.front();
     while (iter.getToken().compare("id") == 0)
     {
-        cout << "Entrando Proc Variavel" << endl;
-
         tabela.pop();
         iter = tabela.front();
-        
+
         if (iter.getToken().compare("simb_virg") == 0)
         {
             tabela.pop();
@@ -235,174 +238,209 @@ bool ProcedimentoVariaveis(queue<Node>& tabela)
         }
         else if (iter.getToken().compare("simb_dp") == 0)
         {
-            cout << "Saindo Proc Variavel" << endl;
             return true;
         }
-        
-        cout << "Saindo Proc Variavel" << endl;
+
         //Else erro, mas vai ter que ser mais complexo que isso
-        
     }
 }
 
-bool ProcedimentoTipoVar(queue<Node>& tabela){
-    cout << "Entrando Tipo Var" << endl;
-    Node iter = tabela.front(); 
+bool ProcedimentoTipoVar(queue<Node> &tabela)
+{
+    Node iter = tabela.front();
 
-    if (iter.getToken().compare("simb_real") == 0){
+    if (iter.getToken().compare("num_real") == 0)
+    {
         tabela.pop();
         iter = tabela.front();
         return true;
+    }
+
+    else if (iter.getToken().compare("num_int") == 0)
+    {
+        tabela.pop();
+        iter = tabela.front();
+        return true;
+    }
+    else
+    {
+        return false;
     }
     
-    else if (iter.getToken().compare("simb_integer") == 0){
-        tabela.pop();
-        iter = tabela.front();
-        return true;
-    }
-}  
+}
 
-bool ProcedimentoParametros(queue<Node>& tabela){ 
-    cout << "Entrando Proc Param" << endl;
-    Node iter = tabela.front(); 
+bool ProcedimentoParametros(queue<Node> &tabela)
+{
+    Node iter = tabela.front();
 
     // Nao precisa entrar nesse if
-    if (iter.getToken().compare("simb_apar") == 0){
+    if (iter.getToken().compare("simb_apar") == 0)
+    {
         tabela.pop();
         iter = tabela.front();
 
-        if(iter.getToken().compare("id") != 0);
-            //erro aq
+        if (iter.getToken().compare("id") != 0)
+            ;
+        //erro aq
 
-        while (iter.getToken().compare("id") == 0){
+        while (iter.getToken().compare("id") == 0)
+        {
             ProcedimentoVariaveis(tabela);
             iter = tabela.front();
 
-            if (iter.getToken().compare("simb_dp") == 0){
+            if (iter.getToken().compare("simb_dp") == 0)
+            {
                 tabela.pop();
                 ProcedimentoTipoVar(tabela);
                 iter = tabela.front();
-            } 
+            }
             //else erro
+        }
 
-        } 
-
-        if(iter.getToken().compare("simb_fpar") == 0){
+        if (iter.getToken().compare("simb_fpar") == 0)
+        {
             tabela.pop();
             iter = tabela.front();
         }
-    }        
-    cout << "Proc Parametros" << endl;
+    }
+    //cout << "Proc Parametros" << endl;
 }
 
-bool ProcedimentoCorpoProc(queue<Node>& tabela){
+bool ProcedimentoCorpoProc(queue<Node> &tabela)
+{
     Node iter = tabela.front();
 
-    cout << "Entrando Proc Corpo Procedimento" << endl;
-    if(iter.getToken().compare("simb_var") == 0){
+    if (iter.getToken().compare("simb_var") == 0)
+    {
         ProcedimentoDVar(tabela);
 
-        if(iter.getToken().compare("simb_begin") == 0){
+        if (iter.getToken().compare("simb_begin") == 0)
+        {
             tabela.pop();
             ProcedimentoComandos(tabela);
             iter = tabela.front();
 
-            if(iter.getToken().compare("simb_end") == 0){
+            if (iter.getToken().compare("simb_end") == 0)
+            {
                 tabela.pop();
                 iter = tabela.front();
-                if(iter.getToken().compare("simb_pv") == 0){
+                if (iter.getToken().compare("simb_pv") == 0)
+                {
                     tabela.pop();
                     iter = tabela.front();
-                    cout << "Saindo Proc Corpo Procedimento" << endl;
                 }
                 //else erro
             }
             //else erro
         }
         //else erro
-    } 
+    }
     //else erro
-
 }
 
-bool ProcedimentoComandos(queue<Node>& tabela)
+bool ProcedimentoComandos(queue<Node> &tabela)
 {
+    bool waiting_end = false;
+
     Node iter = tabela.front();
-    while (iter.getToken().compare("simb_read") == 0 || iter.getToken().compare("simb_write") == 0 || iter.getToken().compare("simb_while") == 0 
-    || iter.getToken().compare("simb_for") == 0 || iter.getToken().compare("simb_if") == 0 || iter.getToken().compare("simb_begin") == 0 || iter.getToken().compare("id") == 0){
-        tabela.pop();
+    while (waiting_end == true || iter.getToken().compare("simb_read") == 0 || iter.getToken().compare("simb_write") == 0 || iter.getToken().compare("simb_while") == 0 || iter.getToken().compare("simb_for") == 0 || iter.getToken().compare("simb_if") == 0 || iter.getToken().compare("simb_begin") == 0 || iter.getToken().compare("id") == 0)
+    {
+        iter = tabela.front();
 
-        bool aux_prov = 0;
-        if (iter.getToken().compare("simb_read") == 0){
+        if (iter.getToken().compare("simb_read") == 0)
+        {
             ProcedimentoRead(tabela);
-            iter = tabela.front();
-            if (iter.getToken().compare("simb_pv") == 0){
-                tabela.pop();
-                iter = tabela.front();
-            } //else esqueceu o ponto e virgulo amigo
         }
 
-        if (iter.getToken().compare("simb_write") == 0){
+        else if (iter.getToken().compare("simb_write") == 0)
+        {
             ProcedimentoWrite(tabela);
-            iter = tabela.front();
-            if (iter.getToken().compare("simb_pv") == 0){
-                tabela.pop();
-                iter = tabela.front();
-            } //else esqueceu o ponto e virgulo amigo
-        }  
-
-        if (iter.getToken().compare("simb_while") == 0){
-            aux_prov = ProcedimentoWhile(tabela);
-            iter = tabela.front();
-            if (iter.getToken().compare("simb_pv") == 0){
-                tabela.pop();
-                iter = tabela.front();
-            } //else esqueceu o ponto e virgulo amigo
         }
 
-        if (iter.getToken().compare("simb_for") == 0){
-            aux_prov = ProcedimentoFor(tabela);
-            iter = tabela.front();
-            if (iter.getToken().compare("simb_pv") == 0){
-                tabela.pop();
-                iter = tabela.front();
-            } //else esqueceu o ponto e virgulo amigo
+        else if (iter.getToken().compare("simb_while") == 0)
+        {
+            waiting_end = ProcedimentoWhile(tabela);
         }
 
-        else if (iter.getToken().compare("simb_if") == 0){
-            aux_prov = ProcedimentoIf(tabela);
-            iter = tabela.front();
-            if (iter.getToken().compare("simb_pv") == 0){
-                tabela.pop();
-                iter = tabela.front();
-            } //else esqueceu o ponto e virgulo amigo
+        else if (iter.getToken().compare("simb_for") == 0)
+        {
+            waiting_end = ProcedimentoFor(tabela);
         }
 
-        if (aux_prov == false){
-            break;
-        }
-            
-        if (iter.getToken().compare("simb_begin") == 0){
-            iter = tabela.front();
-            if (iter.getToken().compare("simb_pv") == 0){
-                tabela.pop();
-                iter = tabela.front();
-            } //else esqueceu o ponto e virgulo amigo
+        else if (iter.getToken().compare("simb_if") == 0)
+        {
+            waiting_end = ProcedimentoIf(tabela);
         }
 
-        if (iter.getToken().compare("id") == 0){
-            iter = tabela.front();  
-            if (iter.getToken().compare("simb_pv") == 0){
+        else if (iter.getToken().compare("id") == 0)
+        {
+            tabela.pop();
+
+            iter = tabela.front();
+            if (iter.getToken().compare("simb_atri") == 0)
+            {
                 tabela.pop();
+
+                ProcedimentoExpressao(tabela);
+            }
+            else if (iter.getToken().compare("simb_apar") == 0)
+            {
+                tabela.pop();
+                bool aux_mais = true;
+
                 iter = tabela.front();
-            } //else esqueceu o ponto e virgulo amigo       
+
+                while (aux_mais == true)
+                {
+                    if (iter.getToken().compare("id") == 0)
+                    {
+                        tabela.pop();
+
+                        iter = tabela.front();
+                        if (iter.getToken().compare("simb_pv") == 0)
+                            tabela.pop();
+                        else if (iter.getToken().compare("simb_fpar") == 0)
+                            aux_mais = false;
+                        // else erro
+                    }
+                }
+
+                tabela.pop();
+            }
         }
+
+        else if (iter.getToken().compare("simb_begin") == 0)
+        {
+            tabela.pop();
+            ProcedimentoComandos(tabela);
+        }
+
+        else if (iter.getToken().compare("simb_end") == 0)
+        {
+            tabela.pop();
+            waiting_end = false;
+        }
+
+        else
+        {
+            waiting_end = false;
+            return false;
+        }
+        
+
+        iter = tabela.front();
+        if (iter.getToken().compare("simb_pv") == 0)
+        {
+            tabela.pop();
+            iter = tabela.front();
+        } //else esqueceu o ponto e virgulo amigo
     }
 }
 
-bool ProcedimentoRead(queue<Node>& tabela){
-    cout << "Entrando Proc Read" << endl;
-    Node iter = tabela.front(); 
+bool ProcedimentoRead(queue<Node> &tabela)
+{
+    tabela.pop();
+    Node iter = tabela.front();
 
     if (iter.getToken().compare("simb_apar") == 0)
     {
@@ -413,14 +451,15 @@ bool ProcedimentoRead(queue<Node>& tabela){
         if (iter.getToken().compare("simb_fpar") == 0)
         {
             tabela.pop();
-            iter = tabela.front();
+            return true;
         }
     }
 }
 
-bool ProcedimentoWrite(queue<Node>& tabela){
-    cout << "Entrando Proc Write" << endl;
-    Node iter = tabela.front(); 
+bool ProcedimentoWrite(queue<Node> &tabela)
+{
+    tabela.pop();
+    Node iter = tabela.front();
 
     if (iter.getToken().compare("simb_apar") == 0)
     {
@@ -431,57 +470,156 @@ bool ProcedimentoWrite(queue<Node>& tabela){
         if (iter.getToken().compare("simb_fpar") == 0)
         {
             tabela.pop();
-            iter = tabela.front();
+            return true;
         }
     }
 }
 
-bool ProcedimentoWhile(queue<Node>& tabela){
-    cout << "Entrando Proc While" << endl;
-    Node iter = tabela.front(); 
+bool ProcedimentoWhile(queue<Node> &tabela)
+{
+    tabela.pop();
+    Node iter = tabela.front();
 
-    if (iter.getToken().compare("simb_apar") == 0){
+    if (iter.getToken().compare("simb_apar") == 0)
+    {
         tabela.pop();
         ProcedimentoCondicao(tabela);
         iter = tabela.front();
 
-        if (iter.getToken().compare("simb_fpar") == 0){
+        if (iter.getToken().compare("simb_fpar") == 0)
+        {
             tabela.pop();
             iter = tabela.front();
 
-            if (iter.getToken().compare("simb_do") == 0){
+            if (iter.getToken().compare("simb_do") == 0)
+            {
                 tabela.pop();
+
                 iter = tabela.front();
-            } 
+                if (iter.getToken().compare("simb_begin") == 0)
+                {
+                    ProcedimentoComandos(tabela);
+                    return true;
+                }
+                else
+                    return false;
+            }
             //else erro
         }
-        //else erro 
+        //else erro
     }
-    return false;
-}
-bool ProcedimentoFor(queue<Node>& tabela){
-    cout << "Entrando Proc For" << endl;
-    return false;
+    // else erro
 }
 
-bool ProcedimentoIf(queue<Node>& tabela){
-    cout << "Entrando Proc If" << endl;
+bool ProcedimentoFor(queue<Node> &tabela)
+{
+    tabela.pop();
     return false;
 }
 
-bool ProcedimentoCondicao(queue<Node>& tabela){
-    cout << "Entrando Proc Cond" << endl;
-    Node iter = tabela.front(); 
+bool ProcedimentoIf(queue<Node> &tabela)
+{
+    tabela.pop();
 
-    if (iter.getToken().compare("simb_soma") == 0 || iter.getToken().compare("simb_sub")){
+    ProcedimentoCondicao(tabela);
+
+    Node iter = tabela.front();
+    if (iter.getToken().compare("simb_then") == 0)
+    {
+        tabela.pop();
+
+        ProcedimentoComandos(tabela);
+
+        iter = tabela.front();
+        if (iter.getToken().compare("simb_else") == 0)
+        {
+            tabela.pop();
+            ProcedimentoComandos(tabela);
+        }
+    }
+    // else erro
+}
+
+bool ProcedimentoCondicao(queue<Node> &tabela)
+{
+    Node iter = tabela.front();
+
+    ProcedimentoExpressao(tabela);
+
+    iter = tabela.front();
+    if (iter.getToken().compare("simb_igual") == 0 || iter.getToken().compare("simb_dif") || iter.getToken().compare("simb_maig") == 0 || iter.getToken().compare("simb_meig") == 0 || iter.getToken().compare("simb_maior") == 0 || iter.getToken().compare("simb_menor") == 0)
+        tabela.pop();
+    // else erro
+
+    ProcedimentoExpressao(tabela);
+}
+
+bool ProcedimentoExpressao(queue<Node> &tabela)
+{
+    Node iter = tabela.front();
+    if (iter.getToken().compare("simb_soma") == 0 || iter.getToken().compare("simb_sub"))
+        tabela.pop();
+    
+    ProcedimentoFator(tabela);
+
+    ProcedimentoMaisFatores(tabela);
+
+    ProcedimentoOutrosTermos(tabela);
+}
+
+bool ProcedimentoTermo(queue<Node> &tabela)
+{
+    Node iter = tabela.front();
+    if (iter.getToken().compare("simb_soma") == 0 || iter.getToken().compare("simb_sub"))
+        tabela.pop();
+    
+    ProcedimentoFator(tabela);
+
+    ProcedimentoMaisFatores(tabela);
+}
+
+//////////////////////* Falta tirar recursao
+bool ProcedimentoOutrosTermos(queue<Node> &tabela)
+{
+    Node iter = tabela.front();
+    if (iter.getToken().compare("simb_soma") == 0 || iter.getToken().compare("simb_sub") == 0)
+    {
+        tabela.pop();
+
+        ProcedimentoTermo(tabela);
+
+        ProcedimentoOutrosTermos(tabela);
+    } 
+}
+
+bool ProcedimentoFator(queue<Node> &tabela)
+{
+    Node iter = tabela.front();
+    if (iter.getToken().compare("id") == 0)
+        tabela.pop();
+    else if (iter.getToken().compare("num_int") == 0 || iter.getToken().compare("num_real") == 0)
+        ProcedimentoTipoVar(tabela);
+    else if (iter.getToken().compare("simb_apar") == 0)
+    {
+        tabela.pop();
+        ProcedimentoExpressao(tabela);
+
+        if (iter.getToken().compare("simb_fpar") == 0)
+            tabela.pop();
+        //else erro
+    } 
+}
+
+//////////////////////* Falta tirar recursao
+bool ProcedimentoMaisFatores(queue<Node>& tabela)
+{
+    Node iter = tabela.front();
+    if (iter.getToken().compare("simb_mult") == 0 || iter.getToken().compare("simb_div") == 0 )
+    {
+        tabela.pop();
+
         ProcedimentoFator(tabela);
-        // Vou parar aqui pq daqui pra frente vai ficar bem foda viu
-    }
 
+        ProcedimentoMaisFatores(tabela);
+    } 
 }
-bool ProcedimentoFator(queue<Node>& tabela){
-    cout << "Entrando Proc Fator" << endl;
-    return false;
-}
-
-
