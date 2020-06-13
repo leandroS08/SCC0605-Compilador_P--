@@ -3,6 +3,7 @@
 #include <string> 
 #include <vector> 
 #include <queue>
+#include <cstring>
 #include "elemento.h"
 #include "lexico.h"
 #include "sintatico.h"
