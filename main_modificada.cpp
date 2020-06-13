@@ -140,8 +140,18 @@ void token(string word)
         //cout << "num" << endl;
 
         flag_num = AutomatoNumInt(num, &name_token);
+        //tamanho incorreto de numero int
+        if( flag_num == true && word.size() > tamVnum){
+            ErroLexico(6, &msg_erro, &flag_erro);
+        }
+
         if(flag_num == false) flag_num = AutomatoNumReal(num, &name_token);
-        if(flag_num == false) ErroLexico(1, &msg_erro, &flag_erro);
+        //tamanho incorreto de numero real 
+        if( flag_num == true && word.size() > tamVnum){
+            ErroLexico(6, &msg_erro, &flag_erro);
+        }
+        
+        if(flag_num == false && flag_erro == false) ErroLexico(1, &msg_erro, &flag_erro);
     }
 
     /* Descobrindo se o numero asc da primeira letra da palavra é uma pontuacao
@@ -166,19 +176,24 @@ void token(string word)
 
         flag_ident = AutomatoIdent(ident, &name_token);
 
-        if(flag_ident == false) ErroLexico(2, &msg_erro, &flag_erro);
+        // verifica irregular
+         //tamanho incorreto de variavél alfabética 
+
+        if( word.size() > tamVnum){
+            ErroLexico(6, &msg_erro, &flag_erro);
+        }
+
+        // verifica caracter irregular
+        else if (flag_ident == false) ErroLexico(2, &msg_erro, &flag_erro);
+
     }
 //AQUI COMEÇA AS MODIFICAÇÕES DA CARLA
     else ErroLexico(3, &msg_erro, &flag_erro);
 
-    //tamanho incorreto de variavél alfabética
-    if(strlen(&name_token)>tamVnum){
-        ErroLexico(6, &msg_erro, &flag_erro);
-    }
+   
 //comentario inserido incorretamente
-    
      if (c != '{') {
-         else ErroLexico(5, &msg_erro, &flag_erro);
+         ErroLexico(5, &msg_erro, &flag_erro);
      }
                        
        
