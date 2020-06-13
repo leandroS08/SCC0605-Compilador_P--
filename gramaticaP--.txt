@@ -23,7 +23,8 @@
  if <condicao> then <cmd> <pfalsa> |
  ident := <expressão> |
  ident <lista_arg> |
- begin <comandos> end
+ begin <comandos> end |
+ for <atribuicao> to <numero> do <cmd> 
 21. <condicao> ::= <expressao> <relacao> <expressao>
 22. <relacao> ::= = | <> | >= | <= | > | <
 23. <expressao> ::= <termo> <outros_termos>
@@ -35,6 +36,8 @@
 29. <op_mul> ::= * | /
 30. <fator> ::= ident | <numero> | ( <expressao> )
 31. <numero> ::= numero_int | numero_real
+32. <atribuicao> ::= <variavel> := <numero> /********** questionar se variavel pode so receber numero, tipo, nao receber outra variavel <variavel> := <variavel>
+33. <variavel> ::= ident
 
 
 --------------------- FORMATADA

@@ -93,6 +93,7 @@ bool ProcedimentoCorpo(queue<Node> &tabela)
     {
         tabela.pop();
         ProcedimentoComandos(tabela);
+
     }
     //else ErroSintatico();
 
@@ -125,7 +126,7 @@ bool ProcedimentoDConst(queue<Node> &tabela)
                 iter = tabela.front();
                 if (iter.getToken().compare("num_int") == 0 || iter.getToken().compare("num_real") == 0) // Conversar
                 {
-                    ProcedimentoTipoVar(tabela);
+                    tabela.pop();
                     //cout << "Comi " << iter.getWord() << " ::: " << iter.getToken() << endl;
 
                     iter = tabela.front();
@@ -245,18 +246,19 @@ bool ProcedimentoVariaveis(queue<Node> &tabela)
     }
 }
 
+/* Explicar pro Leandro que tem que ser sim_real e simb_integer******************************/
 bool ProcedimentoTipoVar(queue<Node> &tabela)
 {
     Node iter = tabela.front();
 
-    if (iter.getToken().compare("num_real") == 0)
+    if (iter.getToken().compare("simb_real") == 0)
     {
         tabela.pop();
         iter = tabela.front();
         return true;
     }
 
-    else if (iter.getToken().compare("num_int") == 0)
+    else if (iter.getToken().compare("simb_integer") == 0)
     {
         tabela.pop();
         iter = tabela.front();
@@ -313,6 +315,7 @@ bool ProcedimentoCorpoProc(queue<Node> &tabela)
     if (iter.getToken().compare("simb_var") == 0)
     {
         ProcedimentoDVar(tabela);
+        iter = tabela.front();
 
         if (iter.getToken().compare("simb_begin") == 0)
         {
@@ -389,7 +392,6 @@ bool ProcedimentoComandos(queue<Node> &tabela)
                 bool aux_mais = true;
 
                 iter = tabela.front();
-
                 while (aux_mais == true)
                 {
                     if (iter.getToken().compare("id") == 0)
@@ -413,27 +415,36 @@ bool ProcedimentoComandos(queue<Node> &tabela)
         {
             tabela.pop();
             ProcedimentoComandos(tabela);
-        }
 
-        else if (iter.getToken().compare("simb_end") == 0)
-        {
-            tabela.pop();
-            waiting_end = false;
+            iter = tabela.front();
+            if (iter.getToken().compare("simb_end") == 0)
+            {         
+                tabela.pop();
+                return true;
+            }
         }
 
         else
         {
-            waiting_end = false;
             return false;
         }
-        
 
         iter = tabela.front();
         if (iter.getToken().compare("simb_pv") == 0)
         {
+            waiting_end = false;
             tabela.pop();
             iter = tabela.front();
-        } //else esqueceu o ponto e virgulo amigo
+        } 
+        // vai entrar so em procedimentos
+        else if (iter.getToken().compare("simb_end") == 0)
+        {
+            return true;
+        } 
+
+        else{
+            cout << "esqueceu o ponto e virgula" << endl;
+        }
     }
 }
 
@@ -511,12 +522,6 @@ bool ProcedimentoWhile(queue<Node> &tabela)
     // else erro
 }
 
-bool ProcedimentoFor(queue<Node> &tabela)
-{
-    tabela.pop();
-    return false;
-}
-
 bool ProcedimentoIf(queue<Node> &tabela)
 {
     tabela.pop();
@@ -527,17 +532,61 @@ bool ProcedimentoIf(queue<Node> &tabela)
     if (iter.getToken().compare("simb_then") == 0)
     {
         tabela.pop();
-
         ProcedimentoComandos(tabela);
 
         iter = tabela.front();
+
         if (iter.getToken().compare("simb_else") == 0)
-        {
+        {   
             tabela.pop();
             ProcedimentoComandos(tabela);
         }
     }
     // else erro
+}
+
+bool ProcedimentoFor(queue<Node> &tabela){
+    tabela.pop();
+
+    ProcedimentoAtribuicao(tabela);
+    Node iter = tabela.front();
+
+    if (iter.getToken().compare("simb_to") == 0){
+        tabela.pop();
+        iter = tabela.front();
+
+        if (iter.getToken().compare("num_int") == 0 || iter.getToken().compare("num_real") == 0){
+            tabela.pop();
+            iter = tabela.front();
+
+            if (iter.getToken().compare("simb_do") == 0) {   
+                tabela.pop();
+                ProcedimentoComandos(tabela);
+            }
+            // else erro
+        }    
+        //else fez errado 
+    }
+    // else erro
+}
+
+bool ProcedimentoAtribuicao(queue<Node> &tabela){
+    Node iter = tabela.front();
+
+    if (iter.getToken().compare("id") == 0){
+        tabela.pop();
+        iter = tabela.front();
+
+        if (iter.getToken().compare("simb_atri") == 0){
+        tabela.pop();
+        iter = tabela.front();
+            if (iter.getToken().compare("num_int") == 0 || iter.getToken().compare("num_real") == 0){
+            tabela.pop();
+            return true;
+            }
+        }      
+    }
+    return false;
 }
 
 bool ProcedimentoCondicao(queue<Node> &tabela)
@@ -582,13 +631,12 @@ bool ProcedimentoTermo(queue<Node> &tabela)
 bool ProcedimentoOutrosTermos(queue<Node> &tabela)
 {
     Node iter = tabela.front();
-    if (iter.getToken().compare("simb_soma") == 0 || iter.getToken().compare("simb_sub") == 0)
+    while (iter.getToken().compare("simb_soma") == 0 || iter.getToken().compare("simb_sub") == 0)
     {
         tabela.pop();
 
         ProcedimentoTermo(tabela);
-
-        ProcedimentoOutrosTermos(tabela);
+        iter = tabela.front();
     } 
 }
 
@@ -598,7 +646,7 @@ bool ProcedimentoFator(queue<Node> &tabela)
     if (iter.getToken().compare("id") == 0)
         tabela.pop();
     else if (iter.getToken().compare("num_int") == 0 || iter.getToken().compare("num_real") == 0)
-        ProcedimentoTipoVar(tabela);
+        tabela.pop();
     else if (iter.getToken().compare("simb_apar") == 0)
     {
         tabela.pop();
@@ -614,12 +662,11 @@ bool ProcedimentoFator(queue<Node> &tabela)
 bool ProcedimentoMaisFatores(queue<Node>& tabela)
 {
     Node iter = tabela.front();
-    if (iter.getToken().compare("simb_mult") == 0 || iter.getToken().compare("simb_div") == 0 )
+    while (iter.getToken().compare("simb_mult") == 0 || iter.getToken().compare("simb_div") == 0 )
     {
         tabela.pop();
 
         ProcedimentoFator(tabela);
-
-        ProcedimentoMaisFatores(tabela);
+        iter = tabela.front();
     } 
 }

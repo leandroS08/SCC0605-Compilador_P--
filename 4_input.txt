@@ -3,9 +3,9 @@ var a: real;
 var b: integer;
 procedure nomep(x: real);
 var a, c: integer;
+
 begin
 read(c, a);
-
 
 if a<x+c then
 begin
@@ -13,7 +13,15 @@ a:= c+x;
 write(a);
 end
 else c:= a+x;
+
+for i:=1 to 10 do
+begin
+x:=x+i;
+write(x);
+end;;
+
 end;
+
 begin {programa principal}
 read(b);
 nomep(b);

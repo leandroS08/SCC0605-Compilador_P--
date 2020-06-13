@@ -53,5 +53,6 @@
 
     bool ProcedimentoMaisFatores(queue<Node>&);
     
+    bool ProcedimentoAtribuicao(queue<Node> &);
     
 #endif
