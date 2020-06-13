@@ -14,17 +14,21 @@
         private:
             string word;
             string token;
+            int line;
 
         public:
-            Node(string w, string t) // construtor
+            Node(string w, string t, int l) // construtor
             {
                 this->word = w;
                 this->token = t;
+                this->line = l;
             }
 
             string getWord() {return word;}
 
             string getToken() {return token;}
+
+            int getLine() {return line;}
     };
 
 #endif

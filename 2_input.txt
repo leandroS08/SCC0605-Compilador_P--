@@ -1,4 +1,4 @@
-program program1;
+program program1
 var x@a:integer;
 {comentario aleatorio 5 @ _ asa}
 begin

@@ -10,15 +10,37 @@ void printQueue(queue<Node> q)
 {
     while (!q.empty())
     {
-        cout << q.front().getWord() << " ::: " << q.front().getToken() << endl;
+        cout << q.front().getLine() << " ::: " << q.front().getWord() << " ::: " << q.front().getToken() << endl;
         q.pop();
     }
     cout << endl;
 }
 
+bool ErroSintatico(int erro, int line, bool& flag){
+    string msg_erro;
+    flag = true;
+    switch (erro)
+    {
+        case 0:
+            msg_erro = "aluno usp nao esquece ponto e virgula, bro";
+        break;
+
+        case 1:
+            msg_erro = "estrutura de inicialização do programa com erros"; // quando falta e quando ta errado
+        break;
+        
+        msg_erro = "erro sintatico inesperado";
+    }
+
+    cout << "Erro sintatico na linha " << line << ": " << msg_erro << endl;
+}
+    
+
 bool ProcedimentoASD(queue<Node> tabela)
 {
     cout << "\n********* ANALISE SINTATICA *********" << endl;
+
+    bool flag_erro = false;
 
     Node iter = tabela.front();
     tabela.pop();
@@ -37,11 +59,11 @@ bool ProcedimentoASD(queue<Node> tabela)
             {
                 ProcedimentoCorpo(tabela);
             }
-            //else ErroSintatico();
+            else ErroSintatico(0, iter.getLine(),flag_erro);
         }
-        //else ErroSintatico();
+        else ErroSintatico(1, iter.getLine(),flag_erro);
     }
-    //else ErroSintatico();
+    else ErroSintatico(1, iter.getLine(),flag_erro);
 
     iter = tabela.front();
     if (iter.getToken().compare("simb_pont") == 0)
@@ -57,14 +79,14 @@ bool ProcedimentoASD(queue<Node> tabela)
         else 
         {
             cout << "Codigo com erro, cadeias não processadas" << endl;
-            printQueue(tabela);
+            //printQueue(tabela);
             //ErroSintatico();
         }
     }
     else
     {
         cout << "Codigo com erro, cadeias não processadas" << endl;
-        printQueue(tabela);
+        //printQueue(tabela);
         /* code */
     }
     

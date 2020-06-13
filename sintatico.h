@@ -11,6 +11,8 @@
 
     void printQueue(queue<Node>);
 
+    bool ErroSintatico(int, int, bool*);
+
     bool ProcedimentoASD(queue<Node>);
 
     bool ProcedimentoCorpo(queue<Node>&);
