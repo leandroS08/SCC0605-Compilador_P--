@@ -42,9 +42,8 @@ int main(int argc, char *argv[])
         while (getline(file_in, line))
         {
             istringstream ss(line);
-            do
+            while (ss >> word_aux)
             {
-                ss >> word_aux;
                 //cout << "Original: " << word_aux << endl;
                 /* 
                     As palavras retornadas podem conter mais de um 1 token, 
@@ -122,7 +121,7 @@ int main(int argc, char *argv[])
                 if (word != "")
                     token(word);
                 word = "";
-            } while (ss);
+            } 
 
             count_line ++;
         }

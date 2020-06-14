@@ -5,6 +5,7 @@
 #include "sintatico.h"
 
 using namespace std;
+int panico = 0;
 
 void printQueue(queue<Node> q)
 {
@@ -22,7 +23,7 @@ bool ErroSintatico(int erro, int line, bool& flag){
     switch (erro)
     {
         case 0:
-            msg_erro = "aluno usp nao esquece ponto e virgula, bro";
+            msg_erro = "aluno usp nao esquece ponto e virgula";
         break;
 
         case 1:
@@ -34,36 +35,46 @@ bool ErroSintatico(int erro, int line, bool& flag){
 
     cout << "Erro sintatico na linha " << line << ": " << msg_erro << endl;
 }
-    
 
 bool ProcedimentoASD(queue<Node> tabela)
 {
     cout << "\n********* ANALISE SINTATICA *********" << endl;
 
     bool flag_erro = false;
+    panico = 0;
 
     Node iter = tabela.front();
-    tabela.pop();
-
+    
+    //********************************* mudei os lugares dos pop da vida
     if (iter.getToken().compare("simb_program") == 0)
     {
-        iter = tabela.front();
         tabela.pop();
+        iter = tabela.front();
 
         if (iter.getToken().compare("id") == 0)
-        {
-            iter = tabela.front();
+        {   
             tabela.pop();
+            iter = tabela.front();
 
             if (iter.getToken().compare("simb_pv") == 0)
             {
+                tabela.pop();
                 ProcedimentoCorpo(tabela);
             }
-            else ErroSintatico(0, iter.getLine(),flag_erro);
+            else {
+                ErroSintatico(0, iter.getLine(),flag_erro);
+                toEmPanico(tabela);
+            }
         }
-        else ErroSintatico(1, iter.getLine(),flag_erro);
+        else {
+            ErroSintatico(1, iter.getLine(),flag_erro);
+            toEmPanico(tabela);
+        } 
     }
-    else ErroSintatico(1, iter.getLine(),flag_erro);
+    else {
+        ErroSintatico(1, iter.getLine(),flag_erro);
+        toEmPanico(tabela);
+    }
 
     iter = tabela.front();
     if (iter.getToken().compare("simb_pont") == 0)
@@ -691,4 +702,22 @@ bool ProcedimentoMaisFatores(queue<Node>& tabela)
         ProcedimentoFator(tabela);
         iter = tabela.front();
     } 
+}
+
+bool toEmPanico(queue<Node> &tabela){
+  Node iter = tabela.front();
+
+    if(panico == 0){
+      while(iter.getToken().compare("simb_const") != 0 && iter.getToken().compare("simb_var") != 0 && iter.getToken().compare("simb_procedure") != 0 && iter.getToken().compare("simb_begin") != 0){
+        tabela.pop();
+        iter = tabela.front();
+
+        if(tabela.empty()){
+          cout << " Codigo com erro, cadeias não processadas" << endl;
+          return false;
+        }
+      }
+      ProcedimentoCorpo(tabela);      
+      return true;
+    }
 }

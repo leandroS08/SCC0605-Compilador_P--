@@ -56,5 +56,7 @@
     bool ProcedimentoMaisFatores(queue<Node>&);
     
     bool ProcedimentoAtribuicao(queue<Node> &);
+
+    bool toEmPanico(queue<Node> &);
     
 #endif
