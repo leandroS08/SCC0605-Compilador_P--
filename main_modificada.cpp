@@ -12,8 +12,8 @@ using namespace std;
 
 ofstream file_out; // Arquivo de saída
 
-int tamVnum = 4; //Tamanho por hora
-int tamVletra= 10; //Tamanho por hora
+#define int tamVnum = 4; //Tamanho por hora, procurei e não achei.
+#define int tamVletra= 10; //Tamanho por hora
 int count_tokens = 0;
 string name_token = "";
 
@@ -192,7 +192,8 @@ void token(string word)
 
    
 //comentario inserido incorretamente
-     if (c != '{') {
+    //Verificar se não esqueci de colocar nada.
+     if (c != '}') {
          ErroLexico(5, &msg_erro, &flag_erro);
      }
                        
