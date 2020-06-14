@@ -13,7 +13,9 @@
 
     bool ErroSintatico(int, int, bool*);
 
-    bool ProcedimentoASD(queue<Node>);
+    bool toEmPanico(queue<Node> &, int);
+
+    bool ProcedimentoASD(queue<Node>, int&);
 
     bool ProcedimentoCorpo(queue<Node>&);
 
@@ -56,7 +58,5 @@
     bool ProcedimentoMaisFatores(queue<Node>&);
     
     bool ProcedimentoAtribuicao(queue<Node> &);
-
-    bool toEmPanico(queue<Node> &);
     
 #endif

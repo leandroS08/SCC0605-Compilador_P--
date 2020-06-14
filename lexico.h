@@ -63,6 +63,6 @@
 
     bool AutomatoIdent(Reserved, std::string*); 
 
-    bool ErroLexico(int, std::string*, bool*);
+    bool ErroLexico(int, std::string*, bool*, int, int&);
 
 #endif

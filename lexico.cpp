@@ -207,30 +207,33 @@ bool AutomatoIdent(Reserved ident, std::string* result){
     }    
 }
 
-bool ErroLexico(int erro, std::string* msg_erro, bool* flag){
+bool ErroLexico(int erro, std::string* msg_erro, bool* flag, int line, int& erros){
     *flag = true;
     switch (erro)
     {
         case 1:
-            *msg_erro = "erro lexico: número irregular";
+            *msg_erro = "número irregular";
         break;
 
         case 2:
-            *msg_erro = "erro lexico: identificador irregular";
+            *msg_erro = "identificador irregular";
         break;
 
         case 3:
-            *msg_erro = "erro lexico: caractere não permitido";
+            *msg_erro = "caractere não permitido";
         break;
 	 case 4:
-            *msg_erro = "erro lexico: tamanho incorreto de variavél";    
+            *msg_erro = "tamanho incorreto de variavél";    
         break;
 
         case 5:
-            *msg_erro = "erro lexico: comentario inserido incorretamente";    
+            *msg_erro = "comentario inserido incorretamente";    
         break;
         
         *msg_erro = "erro lexico inesperado";
     }
+
+    cout << "Erro léxico na linha " << line << ": " << *msg_erro << endl;
+    erros++;
 }
         

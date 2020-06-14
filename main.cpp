@@ -12,10 +12,11 @@ using namespace std;
 
 ofstream file_out; // Arquivo de saída
 
-int count_tokens = 0;
 int count_line = 1;
+int count_tokens = 0;
 string name_token = "";
 
+int count_erros = 0;
 bool flag_erro = false;
 string msg_erro = "";
 
@@ -121,15 +122,31 @@ int main(int argc, char *argv[])
                 if (word != "")
                     token(word);
                 word = "";
-            } 
+            }
 
-            count_line ++;
+            count_line++;
         }
         if (flag_comment == true)
             cout << "erro(comentário não finalizado)" << endl;
         file_in.close();
 
-        ProcedimentoASD(tabela_simbolos);
+        bool result = ProcedimentoASD(tabela_simbolos, count_erros);
+
+        cout << "\n\n********* COMPILAÇÃO FINALIZADA *********" << endl;
+        if (result)
+            cout << "- Todas as cadeias processadas" << endl;
+        else
+            cout << "- Sobraram cadeias não processadas" << endl;
+
+        if (count_erros == 0)
+        {
+            cout << "- Sem erros" << endl;
+            return true;
+        }
+        else
+        {
+            cout << "- Número de erros mapeados: " << count_erros << endl;
+        }
     }
     else
     {
@@ -157,7 +174,10 @@ void token(string word)
         if (flag_num == false)
             flag_num = AutomatoNumReal(num, &name_token);
         if (flag_num == false)
-            ErroLexico(1, &msg_erro, &flag_erro);
+        {
+            ErroLexico(1, &msg_erro, &flag_erro, count_line, count_erros);
+            name_token = "num_real";
+        }
     }
 
     /* Descobrindo se o numero asc da primeira letra da palavra é uma pontuacao
@@ -185,23 +205,26 @@ void token(string word)
         flag_ident = AutomatoIdent(ident, &name_token);
 
         if (flag_ident == false)
-            ErroLexico(2, &msg_erro, &flag_erro);
+        {
+            ErroLexico(2, &msg_erro, &flag_erro, count_line, count_erros);
+            name_token = "id";
+        }
     }
 
     else
-        ErroLexico(3, &msg_erro, &flag_erro);
+        ErroLexico(3, &msg_erro, &flag_erro, count_line, count_erros);
 
     // Printar no terminal
-    if (flag_erro)
+    /*if (flag_erro)
         cout << "[Token " << count_tokens << "] " << word << ", " << msg_erro << endl;
     else
-        cout << "[Token " << count_tokens << "] " << word << ", " << name_token << endl;
+        cout << "[Token " << count_tokens << "] " << word << ", " << name_token << endl;*/
 
     tabela_simbolos.push(Node(word, name_token, count_line));
 
     // Salvar no arquivo
     if (flag_erro)
-        file_out << word << ", " << msg_erro << endl;
+        file_out << word << ", " << name_token << " (" << msg_erro << ")" << endl;
     else
         file_out << word << ", " << name_token << endl;
 
