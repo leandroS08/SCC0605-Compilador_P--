@@ -3,7 +3,7 @@ const B = 5
 var a: ;
 var b: integer;
 
-procedure nomep(x  real);
+procedure nomep(x :);
 
 begin
 read(c, a);

@@ -500,23 +500,28 @@ bool ProcedimentoVariaveis(queue<Node> &tabela)
 bool ProcedimentoTipoVar(queue<Node> &tabela)
 {
     Node iter = tabela.front();
+    bool flag_panico = false;
+    bool flag_erro = false;
+    int id_panico = 6;
 
     if (iter.getToken().compare("simb_real") == 0)
     {
         tabela.pop();
         iter = tabela.front();
-        return true;
+        return false;
     }
 
     else if (iter.getToken().compare("simb_integer") == 0)
     {
         tabela.pop();
         iter = tabela.front();
-        return true;
+        return false;
     }
     else
     {
-        return false;
+        ErroSintatico(9, iter.getLine(), flag_erro);
+        flag_panico = toEmPanico(tabela, id_panico);
+        return true;
     }
 }
 
@@ -527,7 +532,6 @@ bool ProcedimentoParametros(queue<Node> &tabela)
     bool flag_erro = false;
     int id_panico = 6;
 
-    // Nao precisa entrar nesse if
     if (iter.getToken().compare("simb_apar") == 0)
     {
         tabela.pop();
@@ -537,19 +541,20 @@ bool ProcedimentoParametros(queue<Node> &tabela)
         {
             ErroSintatico(9, iter.getLine(), flag_erro);
             flag_panico = toEmPanico(tabela, id_panico);
+            iter = tabela.front();
+            flag_erro = true;
         }
 
         while (iter.getToken().compare("id") == 0)
         {
             ProcedimentoVariaveis(tabela);
             iter = tabela.front();
-            //else erro
         }
 
         if (iter.getToken().compare("simb_dp") == 0)
         {
             tabela.pop();
-            ProcedimentoTipoVar(tabela);
+            flag_erro = ProcedimentoTipoVar(tabela);
             iter = tabela.front();
 
             if (iter.getToken().compare("simb_fpar") == 0)
@@ -561,19 +566,19 @@ bool ProcedimentoParametros(queue<Node> &tabela)
             {
                 ErroSintatico(9, iter.getLine(), flag_erro);
                 flag_panico = toEmPanico(tabela, id_panico);
+                iter = tabela.front();
             }
         }
-        else
+        else if (iter.getToken().compare("simb_dp") != 0 and flag_erro == false)
         {
             ErroSintatico(9, iter.getLine(), flag_erro);
             flag_panico = toEmPanico(tabela, id_panico);
+            iter = tabela.front();
         }
     }
 
     if (iter.getToken().compare("simb_pv") == 0)
-    {   
-        tabela.pop();
-        iter = tabela.front();
+    {
         return true;
     }
 
@@ -582,8 +587,7 @@ bool ProcedimentoParametros(queue<Node> &tabela)
         ErroSintatico(0, iter.getLine(), flag_erro);
         flag_panico = toEmPanico(tabela, id_panico);
     }
-
-    //cout << "Proc Parametros" << endl;
+    return false;
 }
 
 bool ProcedimentoCorpoProc(queue<Node> &tabela)

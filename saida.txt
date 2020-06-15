@@ -18,7 +18,7 @@ procedure, simb_procedure
 nomep, id
 (, simb_apar
 x, id
-real, simb_real
+:, simb_dp
 ), simb_fpar
 ;, simb_pv
 begin, simb_begin
