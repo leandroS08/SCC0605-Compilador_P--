@@ -1,8 +1,9 @@
 program nome2;
-var a: real;
+const B = 5
+var a: ;
 var b: integer;
-procedure nomep(x: real);
-var a, c: integer;
+
+procedure nomep(x  real);
 
 begin
 read(c, a);
