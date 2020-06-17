@@ -12,8 +12,9 @@ using namespace std;
 
 ofstream file_out; // Arquivo de saída
 
-#define int tamVnum = 4; //Tamanho por hora, procurei e não achei.
-#define int tamVletra= 10; //Tamanho por hora
+//#define int tamVnum = 4; //Tamanho por hora, procurei e não achei.
+//#define int tamVletra= 10; //Tamanho por hora
+
 int count_tokens = 0;
 string name_token = "";
 
@@ -106,6 +107,10 @@ int main(int argc, char *argv[])
                         flag_comment = true;
                     else if ( (flag_comment == true) && (c == '}') )
                         flag_comment = false;
+                    //Se o comentario foi fechado corretamente
+                     if (c != '}') {
+                        ErroLexico(5, &msg_erro, &flag_erro);
+                    }
                     // Caracteres normais
                     else if (flag_comment == false) word.push_back(c);
                 }
@@ -178,24 +183,23 @@ void token(string word)
 
         // verifica irregular
          //tamanho incorreto de variavél alfabética 
-
-        if( word.size() > tamVnum){
-            ErroLexico(6, &msg_erro, &flag_erro);
-        }
+//NÃO SERÁ PRECISO VERIFICAR O TAMANHO DO NOME DADO PARA A VARIAVEL
+       // if( word.size() > tamVnum){
+         //   ErroLexico(6, &msg_erro, &flag_erro);
+        //}
 
         // verifica caracter irregular
+           else ErroLexico(3, &msg_erro, &flag_erro);
         else if (flag_ident == false) ErroLexico(2, &msg_erro, &flag_erro);
 
     }
 //AQUI COMEÇA AS MODIFICAÇÕES DA CARLA
-    else ErroLexico(3, &msg_erro, &flag_erro);
+    //else ErroLexico(3, &msg_erro, &flag_erro);
 
    
 //comentario inserido incorretamente
     //Verificar se não esqueci de colocar nada.
-     if (c != '}') {
-         ErroLexico(5, &msg_erro, &flag_erro);
-     }
+    
                        
        
     
