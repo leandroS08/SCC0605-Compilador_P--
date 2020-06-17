@@ -11,7 +11,7 @@ Na análise sintática. Iremos verficar as palavras se estão escritas de modo c
 10º)Iteração entre tipos diferentes de variavéis;
 11º)Expectativa de objetos de classe(erro 63);
 12º)"Redeclaração" de variavéis;
-
+13º)Função com retorno, que no retorna nada;
 .
 Completar depois.
 Erros retirados do arquivo:"listagem+de+erros+pascal.txt
