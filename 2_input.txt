@@ -9,5 +9,5 @@ begin
 		begin
 			x::=x+12.5%1;
 			write(c);
-			end;
+		end;
 end.

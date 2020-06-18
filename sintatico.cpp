@@ -62,6 +62,7 @@ bool ErroSintatico(int erro, int line, bool &flag)
 
     case 11:
         msg_erro = "comando inválido";
+        break;
 
     case 12:
         msg_erro = "corpo de procedimento inválido";
@@ -82,9 +83,17 @@ bool ErroSintatico(int erro, int line, bool &flag)
     case 16:
         msg_erro = "estrutura de atribuição inválida";
         break;
+
+    case 17:
+        msg_erro = "faltando -> )";
+        break;
+    
+    case 18:
+        msg_erro = "fator inválido";
+        break;
     }
 
-    ofstream file_out; // Arquivo de saída
+    ofstream file_out;                    // Arquivo de saída
     file_out.open("saida.txt", ios::app); // Cria o arquivo de saída
 
     file_out << "Erro sintatico na linha " << line << ": " << msg_erro << endl;
@@ -226,13 +235,13 @@ bool ProcedimentoASD(queue<Node> &tabela, int &count_erros)
                 Node iter_aux = tabela.front();
 
                 if (iter.getWord().compare(iter_aux.getWord()) == 0)
-                    ErroSintatico(0, iter_aux.getLine(), flag_erro);
+                    ErroSintatico(0, iter_aux.getLine()-1, flag_erro);
                 else if (iter_aux.getToken().compare("simb_pv") == 0)
                     ErroSintatico(1, iter_aux.getLine(), flag_erro);
                 else
                 {
-                    ErroSintatico(1, iter_aux.getLine(), flag_erro);
-                    ErroSintatico(0, iter_aux.getLine(), flag_erro);
+                    ErroSintatico(1, iter_aux.getLine()-1, flag_erro);
+                    ErroSintatico(0, iter_aux.getLine()-1, flag_erro);
                 }
             }
         }
@@ -254,18 +263,16 @@ bool ProcedimentoASD(queue<Node> &tabela, int &count_erros)
 
         iter = tabela.front();
         if (iter.getToken().compare("simb_pont") == 0)
+        {
             tabela.pop();
+            count_erros = count_erros + count_erros_sintaticos;
+            return true;
+        }
         else if (tabela.empty())
         {
             ErroSintatico(2, iter.getLine(), flag_erro);
             count_erros = count_erros + count_erros_sintaticos;
             return true;
-        }
-        else
-        {
-            ErroSintatico(3, iter.getLine(), flag_erro);
-            count_erros = count_erros + count_erros_sintaticos;
-            return false;
         }
     }
     else
@@ -1095,8 +1102,6 @@ bool ProcedimentoCondicao(queue<Node> &tabela)
     {
         ErroSintatico(15, iter.getLine(), flag_erro);
         flag_panico = toEmPanico(tabela, 9);
-
-        
     }
 
     ProcedimentoExpressao(tabela);
@@ -1158,20 +1163,34 @@ bool ProcedimentoFator(queue<Node> &tabela)
     bool flag_panico = false;
 
     if (iter.getToken().compare("id") == 0)
+    {
         tabela.pop();
+        return true;
+    }
     else if (iter.getToken().compare("num_int") == 0 || iter.getToken().compare("num_real") == 0)
+    {
         tabela.pop();
+        return true;
+    }
     else if (iter.getToken().compare("simb_apar") == 0)
     {
         tabela.pop();
+
         ProcedimentoExpressao(tabela);
 
+        iter = tabela.front();
         if (iter.getToken().compare("simb_fpar") == 0)
             tabela.pop();
-        //else erro
+        else
+        {
+            ErroSintatico(17, iter.getLine(), flag_erro);
+            flag_panico = toEmPanico(tabela, 9);
+        }
     }
     else
     {
+        ErroSintatico(18, iter.getLine(), flag_erro);
+        flag_panico = toEmPanico(tabela, 9);
     }
 }
 
