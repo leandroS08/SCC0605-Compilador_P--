@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <queue>
 #include "elemento.h"
@@ -7,16 +8,6 @@
 using namespace std;
 
 int count_erros_sintaticos = 0;
-
-void printQueue(queue<Node> q)
-{
-    while (!q.empty())
-    {
-        cout << q.front().getLine() << " ::: " << q.front().getWord() << " ::: " << q.front().getToken() << endl;
-        q.pop();
-    }
-    cout << endl;
-}
 
 bool ErroSintatico(int erro, int line, bool &flag)
 {
@@ -31,7 +22,6 @@ bool ErroSintatico(int erro, int line, bool &flag)
 
     case 0:
         msg_erro = "faltando -> ; (aluno usp não faz isso...)";
-        line = line - 1;
         break;
 
     case 1:
@@ -51,7 +41,7 @@ bool ErroSintatico(int erro, int line, bool &flag)
         break;
 
     case 6:
-        msg_erro = "declaração de constante inválida";
+        msg_erro = "estrutura de declaração de constante inválida";
         break;
 
     case 7:
@@ -59,13 +49,47 @@ bool ErroSintatico(int erro, int line, bool &flag)
         break;
 
     case 8:
-        msg_erro = "declaração de variável inválida";
+        msg_erro = "estrutura de declaração de variável inválida";
         break;
 
     case 9:
-        msg_erro = "declaração de procedimento inválida";
+        msg_erro = "estrutura declaração de procedimento inválida";
+        break;
+
+    case 10:
+        msg_erro = "variáveis inseridas de forma inválida nesse comando";
+        break;
+
+    case 11:
+        msg_erro = "comando inválido";
+
+    case 12:
+        msg_erro = "corpo de procedimento inválido";
+        break;
+
+    case 13:
+        msg_erro = "estrutura de repetição inválida";
+        break;
+
+    case 14:
+        msg_erro = "estrutura condicional inválida";
+        break;
+
+    case 15:
+        msg_erro = "condicao inválida";
+        break;
+
+    case 16:
+        msg_erro = "estrutura de atribuição inválida";
         break;
     }
+
+    ofstream file_out; // Arquivo de saída
+    file_out.open("saida.txt", ios::app); // Cria o arquivo de saída
+
+    file_out << "Erro sintatico na linha " << line << ": " << msg_erro << endl;
+
+    file_out.close();
 
     cout << "Erro sintatico na linha " << line << ": " << msg_erro << endl;
     count_erros_sintaticos++;
@@ -90,12 +114,7 @@ bool toEmPanico(queue<Node> &tabela, int id_panico)
             tabela.pop();
             return false;
         }
-        else
-        {
-            bool aux;
-            //ErroSintatico(0, iter.getLine(), aux);
-            return false;
-        }
+        return false;
     }
 
     else if (id_panico == 5)
@@ -109,21 +128,16 @@ bool toEmPanico(queue<Node> &tabela, int id_panico)
             if (tabela.empty())
                 return true;
         }
-        return false;
+
         if (iter.getToken().compare("simb_pv") == 0)
         {
             tabela.pop();
             return false;
         }
-        else
-        {
-            bool aux;
-            //ErroSintatico(0, iter.getLine(), aux);
-            return false;
-        }
+        return false;
     }
 
-    else if (id_panico == 6)
+    else if (id_panico == 6 || id_panico == 9)
     {
         iter = tabela.front();
         while (iter.getToken().compare("simb_fpar") != 0 && iter.getToken().compare("simb_pv") != 0)
@@ -134,24 +148,59 @@ bool toEmPanico(queue<Node> &tabela, int id_panico)
             if (tabela.empty())
                 return true;
         }
+        return false;
+    }
 
-        if (iter.getToken().compare("simb_fpar") == 0)
+    else if (id_panico == 7)
+    {
+        iter = tabela.front();
+        while (iter.getToken().compare("simb_fpar") != 0 && iter.getToken().compare("simb_pv") != 0 && iter.getToken().compare("simb_dp") != 0)
+        {
+            tabela.pop();
+            iter = tabela.front();
+
+            if (tabela.empty())
+                return true;
+        }
+        return false;
+    }
+
+    else if (id_panico == 8)
+    {
+        iter = tabela.front();
+        while (iter.getToken().compare("simb_pv") != 0)
+        {
+            tabela.pop();
+            iter = tabela.front();
+
+            if (tabela.empty())
+                return true;
+        }
+        if (iter.getToken().compare("simb_pv") == 0)
         {
             tabela.pop();
             return false;
         }
-        else
+        return false;
+    }
+
+    else if (id_panico == 9)
+    {
+        iter = tabela.front();
+        while (iter.getToken().compare("simb_apar") != 0 || iter.getToken().compare("simb_id") != 0 || iter.getToken().compare("num_real") != 0 || iter.getToken().compare("num_int") != 0)
         {
-            bool aux;
-            return false;
+            tabela.pop();
+            iter = tabela.front();
+
+            if (tabela.empty())
+                return true;
         }
+        return false;
     }
 }
 
-bool ProcedimentoASD(queue<Node> tabela, int &count_erros)
+bool ProcedimentoASD(queue<Node> &tabela, int &count_erros)
 {
-    cout << "\n********* ANALISE SINTATICA *********" << endl;
-
     bool flag_erro = false;
     bool flag_panico = false;
     int id_panico = 0;
@@ -172,8 +221,19 @@ bool ProcedimentoASD(queue<Node> tabela, int &count_erros)
                 tabela.pop();
             else
             {
-                ErroSintatico(1, iter.getLine(), flag_erro);
+                iter = tabela.front();
                 flag_panico = toEmPanico(tabela, id_panico);
+                Node iter_aux = tabela.front();
+
+                if (iter.getWord().compare(iter_aux.getWord()) == 0)
+                    ErroSintatico(0, iter_aux.getLine(), flag_erro);
+                else if (iter_aux.getToken().compare("simb_pv") == 0)
+                    ErroSintatico(1, iter_aux.getLine(), flag_erro);
+                else
+                {
+                    ErroSintatico(1, iter_aux.getLine(), flag_erro);
+                    ErroSintatico(0, iter_aux.getLine(), flag_erro);
+                }
             }
         }
         else
@@ -204,8 +264,6 @@ bool ProcedimentoASD(queue<Node> tabela, int &count_erros)
         else
         {
             ErroSintatico(3, iter.getLine(), flag_erro);
-            cout << endl;
-            printQueue(tabela);
             count_erros = count_erros + count_erros_sintaticos;
             return false;
         }
@@ -268,23 +326,31 @@ bool ProcedimentoCorpo(queue<Node> &tabela)
         {
             ErroSintatico(4, iter.getLine(), flag_erro);
             wait_begin = true;
-            return false;
+            return true;
         }
 
         iter = tabela.front();
     }
 
-    ProcedimentoComandos(tabela);
-
-    iter = tabela.front();
-    if (iter.getToken().compare("simb_end") == 0)
+    if (flag_panico == false)
     {
-        tabela.pop();
-        return true;
+        ProcedimentoComandos(tabela);
+
+        iter = tabela.front();
+        if (iter.getToken().compare("simb_end") == 0)
+        {
+            tabela.pop();
+            return true;
+        }
+        else
+        {
+            ErroSintatico(5, iter.getLine(), flag_erro);
+            return true;
+        }
     }
     else
     {
-        ErroSintatico(5, iter.getLine(), flag_erro);
+        ErroSintatico(-1, iter.getLine(), flag_erro); // não conseguiu recuperar a compilação do código
         return false;
     }
 }
@@ -461,6 +527,7 @@ bool ProcedimentoDProc(queue<Node> &tabela)
                 {
                     ErroSintatico(9, iter.getLine(), flag_erro);
                     flag_panico = toEmPanico(tabela, id_panico);
+                    ProcedimentoCorpoProc(tabela);
                 }
             }
             else
@@ -470,6 +537,7 @@ bool ProcedimentoDProc(queue<Node> &tabela)
         {
             ErroSintatico(9, iter.getLine(), flag_erro);
             flag_panico = toEmPanico(tabela, id_panico);
+            ProcedimentoCorpoProc(tabela);
         }
     }
 }
@@ -477,26 +545,42 @@ bool ProcedimentoDProc(queue<Node> &tabela)
 bool ProcedimentoVariaveis(queue<Node> &tabela)
 {
     Node iter = tabela.front();
-    while (iter.getToken().compare("id") == 0)
+    bool flag_panico = false;
+    bool flag_erro = false;
+    int id_panico = 6;
+
+    if (iter.getToken().compare("id") == 0)
+    {
+        tabela.pop();
+        iter = tabela.front();
+    }
+    else
+    {
+        ErroSintatico(10, iter.getLine(), flag_erro);
+        flag_panico = toEmPanico(tabela, id_panico);
+        iter = tabela.front();
+    }
+
+    while (iter.getToken().compare("simb_virg") == 0)
     {
         tabela.pop();
         iter = tabela.front();
 
-        if (iter.getToken().compare("simb_virg") == 0)
+        if (iter.getToken().compare("id") == 0)
         {
             tabela.pop();
             iter = tabela.front();
         }
-        else if (iter.getToken().compare("simb_dp") == 0)
+        else
         {
-            return true;
+            ErroSintatico(10, iter.getLine(), flag_erro);
+            flag_panico = toEmPanico(tabela, id_panico);
+            iter = tabela.front();
         }
-
-        //Else erro, mas vai ter que ser mais complexo que isso
     }
+    return true;
 }
 
-/* Explicar pro Leandro que tem que ser sim_real e simb_integer******************************/
 bool ProcedimentoTipoVar(queue<Node> &tabela)
 {
     Node iter = tabela.front();
@@ -577,7 +661,17 @@ bool ProcedimentoParametros(queue<Node> &tabela)
         }
     }
 
-    if (iter.getToken().compare("simb_pv") == 0)
+    if (iter.getToken().compare("simb_fpar") == 0)
+    {
+        tabela.pop();
+        iter = tabela.front();
+        if (iter.getToken().compare("simb_pv") == 0)
+        {
+            return true;
+        }
+    }
+
+    else if (iter.getToken().compare("simb_pv") == 0)
     {
         return true;
     }
@@ -585,14 +679,16 @@ bool ProcedimentoParametros(queue<Node> &tabela)
     else
     {
         ErroSintatico(0, iter.getLine(), flag_erro);
-        flag_panico = toEmPanico(tabela, id_panico);
+        return false;
     }
-    return false;
 }
 
 bool ProcedimentoCorpoProc(queue<Node> &tabela)
 {
     Node iter = tabela.front();
+    bool flag_panico = false;
+    bool flag_erro = false;
+    int id_panico = 8;
 
     if (iter.getToken().compare("simb_var") == 0)
     {
@@ -614,11 +710,25 @@ bool ProcedimentoCorpoProc(queue<Node> &tabela)
                     tabela.pop();
                     iter = tabela.front();
                 }
-                //else erro
+                else
+                {
+                    ErroSintatico(0, iter.getLine(), flag_erro);
+                    return true;
+                }
             }
-            //else erro
+            else
+            {
+                ErroSintatico(12, iter.getLine(), flag_erro);
+                flag_panico = toEmPanico(tabela, id_panico);
+                return true;
+            }
         }
-        //else erro
+        else
+        {
+            ErroSintatico(12, iter.getLine(), flag_erro);
+            flag_panico = toEmPanico(tabela, id_panico);
+            return true;
+        }
     }
 
     else if (iter.getToken().compare("simb_begin") == 0)
@@ -636,20 +746,36 @@ bool ProcedimentoCorpoProc(queue<Node> &tabela)
                 tabela.pop();
                 iter = tabela.front();
             }
-            //else erro
+            else
+            {
+                ErroSintatico(0, iter.getLine(), flag_erro);
+                return true;
+            }
         }
-        //else erro
+        else
+        {
+            ErroSintatico(12, iter.getLine(), flag_erro);
+            flag_panico = toEmPanico(tabela, id_panico);
+            return true;
+        }
     }
-
-    //else erro
+    else
+    {
+        ErroSintatico(12, iter.getLine(), flag_erro);
+        flag_panico = toEmPanico(tabela, id_panico);
+        return true;
+    }
 }
 
 bool ProcedimentoComandos(queue<Node> &tabela)
 {
     bool waiting_end = false;
+    bool flag_panico = false;
+    bool flag_erro = false;
+    int id_panico = 8;
 
     Node iter = tabela.front();
-    while (waiting_end == true || iter.getToken().compare("simb_read") == 0 || iter.getToken().compare("simb_write") == 0 || iter.getToken().compare("simb_while") == 0 || iter.getToken().compare("simb_for") == 0 || iter.getToken().compare("simb_if") == 0 || iter.getToken().compare("simb_begin") == 0 || iter.getToken().compare("id") == 0)
+    while (iter.getToken().compare("simb_end") != 0 && tabela.empty() == false)
     {
         iter = tabela.front();
 
@@ -706,7 +832,7 @@ bool ProcedimentoComandos(queue<Node> &tabela)
                             tabela.pop();
                         else if (iter.getToken().compare("simb_fpar") == 0)
                             aux_mais = false;
-                        // else erro
+                        // else erro (DEIXEI ESSE PRA VC <3 rs)
                     }
                 }
 
@@ -716,6 +842,7 @@ bool ProcedimentoComandos(queue<Node> &tabela)
 
         else if (iter.getToken().compare("simb_begin") == 0)
         {
+            waiting_end = true;
             tabela.pop();
             ProcedimentoComandos(tabela);
 
@@ -725,30 +852,30 @@ bool ProcedimentoComandos(queue<Node> &tabela)
                 tabela.pop();
                 return true;
             }
+            else
+            {
+                ErroSintatico(5, iter.getLine(), flag_erro);
+                flag_panico = toEmPanico(tabela, id_panico);
+            }
         }
-
         else
         {
-            return false;
+            ErroSintatico(11, iter.getLine(), flag_erro);
+            flag_panico = toEmPanico(tabela, id_panico);
         }
 
         iter = tabela.front();
         if (iter.getToken().compare("simb_pv") == 0)
+            tabela.pop();
+        if (iter.getToken().compare("simb_end") == 0)
         {
             waiting_end = false;
-            tabela.pop();
-            iter = tabela.front();
-        }
-        // vai entrar so em procedimentos
-        else if (iter.getToken().compare("simb_end") == 0)
-        {
             return true;
         }
-
-        else
-        {
-            cout << "esqueceu o ponto e virgula" << endl;
-        }
+        //else
+        //{
+        //    ErroSintatico(0, iter.getLine(), flag_erro);
+        //}
     }
 }
 
@@ -756,6 +883,9 @@ bool ProcedimentoRead(queue<Node> &tabela)
 {
     tabela.pop();
     Node iter = tabela.front();
+    bool flag_erro = false;
+    bool flag_panico = false;
+    int id_panico = 8;
 
     if (iter.getToken().compare("simb_apar") == 0)
     {
@@ -768,6 +898,18 @@ bool ProcedimentoRead(queue<Node> &tabela)
             tabela.pop();
             return true;
         }
+        else
+        {
+            ErroSintatico(11, iter.getLine(), flag_erro);
+            flag_panico = toEmPanico(tabela, id_panico);
+            return false;
+        }
+    }
+    else
+    {
+        ErroSintatico(11, iter.getLine(), flag_erro);
+        flag_panico = toEmPanico(tabela, id_panico);
+        return false;
     }
 }
 
@@ -775,6 +917,9 @@ bool ProcedimentoWrite(queue<Node> &tabela)
 {
     tabela.pop();
     Node iter = tabela.front();
+    bool flag_erro = false;
+    bool flag_panico = false;
+    int id_panico = 8;
 
     if (iter.getToken().compare("simb_apar") == 0)
     {
@@ -787,6 +932,18 @@ bool ProcedimentoWrite(queue<Node> &tabela)
             tabela.pop();
             return true;
         }
+        else
+        {
+            ErroSintatico(11, iter.getLine(), flag_erro);
+            flag_panico = toEmPanico(tabela, id_panico);
+            return false;
+        }
+    }
+    else
+    {
+        ErroSintatico(11, iter.getLine(), flag_erro);
+        flag_panico = toEmPanico(tabela, id_panico);
+        return false;
     }
 }
 
@@ -794,6 +951,9 @@ bool ProcedimentoWhile(queue<Node> &tabela)
 {
     tabela.pop();
     Node iter = tabela.front();
+    bool flag_erro = false;
+    bool flag_panico = false;
+    int id_panico = 9;
 
     if (iter.getToken().compare("simb_apar") == 0)
     {
@@ -810,25 +970,33 @@ bool ProcedimentoWhile(queue<Node> &tabela)
             {
                 tabela.pop();
 
-                iter = tabela.front();
-                if (iter.getToken().compare("simb_begin") == 0)
-                {
-                    ProcedimentoComandos(tabela);
-                    return true;
-                }
-                else
-                    return false;
+                ProcedimentoComandos(tabela);
             }
-            //else erro
+            else
+            {
+                ErroSintatico(13, iter.getLine(), flag_erro);
+                flag_panico = toEmPanico(tabela, id_panico);
+            }
         }
-        //else erro
+        else
+        {
+            ErroSintatico(13, iter.getLine(), flag_erro);
+            flag_panico = toEmPanico(tabela, id_panico);
+        }
     }
-    // else erro
+    else
+    {
+        ErroSintatico(13, iter.getLine(), flag_erro);
+        flag_panico = toEmPanico(tabela, id_panico);
+    }
 }
 
 bool ProcedimentoIf(queue<Node> &tabela)
 {
     tabela.pop();
+    bool flag_erro = false;
+    bool flag_panico = false;
+    int id_panico = 10;
 
     ProcedimentoCondicao(tabela);
 
@@ -839,23 +1007,28 @@ bool ProcedimentoIf(queue<Node> &tabela)
         ProcedimentoComandos(tabela);
 
         iter = tabela.front();
-
         if (iter.getToken().compare("simb_else") == 0)
         {
             tabela.pop();
             ProcedimentoComandos(tabela);
         }
     }
-    // else erro
+    else
+    {
+        ErroSintatico(14, iter.getLine(), flag_erro);
+        flag_panico = toEmPanico(tabela, id_panico);
+    }
 }
 
 bool ProcedimentoFor(queue<Node> &tabela)
 {
     tabela.pop();
+    bool flag_erro = false;
+    bool flag_panico = false;
 
     ProcedimentoAtribuicao(tabela);
-    Node iter = tabela.front();
 
+    Node iter = tabela.front();
     if (iter.getToken().compare("simb_to") == 0)
     {
         tabela.pop();
@@ -880,44 +1053,62 @@ bool ProcedimentoFor(queue<Node> &tabela)
 
 bool ProcedimentoAtribuicao(queue<Node> &tabela)
 {
+    tabela.pop();
     Node iter = tabela.front();
+    bool flag_erro = false;
+    bool flag_panico = false;
 
-    if (iter.getToken().compare("id") == 0)
+    if (iter.getToken().compare("simb_atri") == 0)
     {
         tabela.pop();
         iter = tabela.front();
-
-        if (iter.getToken().compare("simb_atri") == 0)
+        if (iter.getToken().compare("num_int") == 0 || iter.getToken().compare("num_real") == 0)
         {
             tabela.pop();
-            iter = tabela.front();
-            if (iter.getToken().compare("num_int") == 0 || iter.getToken().compare("num_real") == 0)
-            {
-                tabela.pop();
-                return true;
-            }
+            return true;
+        }
+        else
+        {
+            ErroSintatico(16, iter.getLine(), flag_erro);
+            flag_panico = toEmPanico(tabela, 8);
         }
     }
-    return false;
+    else
+    {
+        ErroSintatico(16, iter.getLine(), flag_erro);
+        flag_panico = toEmPanico(tabela, 8);
+    }
 }
 
 bool ProcedimentoCondicao(queue<Node> &tabela)
 {
-    Node iter = tabela.front();
+    tabela.pop();
+    bool flag_erro = false;
+    bool flag_panico = false;
 
     ProcedimentoExpressao(tabela);
 
-    iter = tabela.front();
+    Node iter = tabela.front();
     if (iter.getToken().compare("simb_igual") == 0 || iter.getToken().compare("simb_dif") || iter.getToken().compare("simb_maig") == 0 || iter.getToken().compare("simb_meig") == 0 || iter.getToken().compare("simb_maior") == 0 || iter.getToken().compare("simb_menor") == 0)
         tabela.pop();
-    // else erro
+    else
+    {
+        ErroSintatico(15, iter.getLine(), flag_erro);
+        flag_panico = toEmPanico(tabela, 9);
+
+        
+    }
 
     ProcedimentoExpressao(tabela);
 }
 
 bool ProcedimentoExpressao(queue<Node> &tabela)
 {
+    tabela.pop();
     Node iter = tabela.front();
+    bool flag_erro = false;
+    bool flag_panico = false;
+
     if (iter.getToken().compare("simb_soma") == 0 || iter.getToken().compare("simb_sub"))
         tabela.pop();
 
@@ -930,7 +1121,11 @@ bool ProcedimentoExpressao(queue<Node> &tabela)
 
 bool ProcedimentoTermo(queue<Node> &tabela)
 {
+    tabela.pop();
     Node iter = tabela.front();
+    bool flag_erro = false;
+    bool flag_panico = false;
+
     if (iter.getToken().compare("simb_soma") == 0 || iter.getToken().compare("simb_sub"))
         tabela.pop();
 
@@ -939,10 +1134,13 @@ bool ProcedimentoTermo(queue<Node> &tabela)
     ProcedimentoMaisFatores(tabela);
 }
 
-//////////////////////* Falta tirar recursao
 bool ProcedimentoOutrosTermos(queue<Node> &tabela)
 {
+    tabela.pop();
     Node iter = tabela.front();
+    bool flag_erro = false;
+    bool flag_panico = false;
+
     while (iter.getToken().compare("simb_soma") == 0 || iter.getToken().compare("simb_sub") == 0)
     {
         tabela.pop();
@@ -954,7 +1152,11 @@ bool ProcedimentoOutrosTermos(queue<Node> &tabela)
 
 bool ProcedimentoFator(queue<Node> &tabela)
 {
+    tabela.pop();
     Node iter = tabela.front();
+    bool flag_erro = false;
+    bool flag_panico = false;
+
     if (iter.getToken().compare("id") == 0)
         tabela.pop();
     else if (iter.getToken().compare("num_int") == 0 || iter.getToken().compare("num_real") == 0)
@@ -968,12 +1170,18 @@ bool ProcedimentoFator(queue<Node> &tabela)
             tabela.pop();
         //else erro
     }
+    else
+    {
+    }
 }
 
-//////////////////////* Falta tirar recursao
 bool ProcedimentoMaisFatores(queue<Node> &tabela)
 {
+    tabela.pop();
     Node iter = tabela.front();
+    bool flag_erro = false;
+    bool flag_panico = false;
+
     while (iter.getToken().compare("simb_mult") == 0 || iter.getToken().compare("simb_div") == 0)
     {
         tabela.pop();

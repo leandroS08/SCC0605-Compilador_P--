@@ -1,9 +1,13 @@
-program program1
+program program1 A
 var x@a:integer;
 {comentario aleatorio 5 @ _ asa}
 begin
+	read(b);
 	1x:=1.578;
 	while(x*<=3) do
 		if$ (x<>2) then
+		begin
 			x::=x+12.5%1;
+			write(c);
+			end;
 end.

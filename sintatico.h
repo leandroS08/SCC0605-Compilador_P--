@@ -9,13 +9,11 @@
     #include <queue>
     #include "elemento.h"
 
-    void printQueue(queue<Node>);
-
     bool ErroSintatico(int, int, bool*);
 
     bool toEmPanico(queue<Node> &, int);
 
-    bool ProcedimentoASD(queue<Node>, int&);
+    bool ProcedimentoASD(queue<Node>&, int&);
 
     bool ProcedimentoCorpo(queue<Node>&);
 

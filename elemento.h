@@ -24,11 +24,19 @@
                 this->line = l;
             }
 
+            Node(string w, int l) // construtor
+            {
+                this->word = w;
+                this->line = l;
+            }
+
             string getWord() {return word;}
 
             string getToken() {return token;}
 
             int getLine() {return line;}
+
+            void setToken(string t) {this->token = t;}
     };
 
 #endif

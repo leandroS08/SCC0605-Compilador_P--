@@ -6,6 +6,10 @@
 
     #include <string>
     #include <stdio.h>
+    #include <queue>
+    #include "elemento.h"
+
+    void token(queue<Node>&, Node, int&);
 
     /* Classe para reconhecer numeros */
     class Numbers 

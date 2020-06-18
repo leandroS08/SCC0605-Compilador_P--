@@ -10,19 +10,13 @@
 
 using namespace std;
 
-ofstream file_out; // Arquivo de saída
-
 int count_line = 1;
-int count_tokens = 0;
-string name_token = "";
 
 int count_erros = 0;
-bool flag_erro = false;
-string msg_erro = "";
 
 queue<Node> tabela_simbolos;
 
-void token(string);
+void printQueue(queue<Node>);
 
 int main(int argc, char *argv[])
 {
@@ -34,7 +28,8 @@ int main(int argc, char *argv[])
 
     ifstream file_in(argv[1]); // Arquivo de entrada
 
-    file_out.open("saida.txt"); // Cria o arquivo de saída
+    ofstream file_out; // Arquivo de saída
+    file_out.open("saida.txt", ios::trunc); // Cria o arquivo de saída
 
     if (file_in.is_open()) // Testa se o arquivo foi aberto corretamente
     {
@@ -63,13 +58,13 @@ int main(int argc, char *argv[])
                     if ((flag_comment == false) && (flag_2s == false) && ((c == '=') || (c == ',') || (c == ';') || (c == '(') || (c == ')') || (c == '+') || (c == '-') || (c == '/') || (c == '*')))
                     {
                         if (word != "")
-                            token(word);
+                            token(tabela_simbolos, Node(word, count_line), count_erros);
                         word = "";
                         word.push_back(c);
                         if (it != (word_aux.end() - 1))
                         {
                             if (word != "")
-                                token(word);
+                                token(tabela_simbolos, Node(word, count_line), count_erros);
                             word = "";
                         }
                     }
@@ -77,7 +72,7 @@ int main(int argc, char *argv[])
                     else if ((flag_comment == false) && (flag_2s == false) && ((c == ':') || (c == '<') || (c == '>')))
                     {
                         if (word != "")
-                            token(word);
+                            token(tabela_simbolos, Node(word, count_line), count_erros);
                         word = "";
                         word.push_back(c);
                         flag_2s = true;
@@ -89,13 +84,13 @@ int main(int argc, char *argv[])
                         {
                             word.push_back(c);
                             if (word != "")
-                                token(word);
+                                token(tabela_simbolos, Node(word, count_line), count_erros);
                             word = "";
                         }
                         else
                         {
                             if (word != "")
-                                token(word);
+                                token(tabela_simbolos, Node(word, count_line), count_erros);
                             word = "";
                             word.push_back(c);
                         }
@@ -105,7 +100,7 @@ int main(int argc, char *argv[])
                     else if ((flag_comment == false) && (c == '.') && (word == "end"))
                     {
                         if (word != "")
-                            token(word);
+                            token(tabela_simbolos, Node(word, count_line), count_erros);
                         word = "";
                         word.push_back(c);
                     }
@@ -120,7 +115,7 @@ int main(int argc, char *argv[])
                 }
 
                 if (word != "")
-                    token(word);
+                    token(tabela_simbolos, Node(word, count_line), count_erros);
                 word = "";
             }
 
@@ -129,29 +124,37 @@ int main(int argc, char *argv[])
         if (flag_comment == true)
             cout << "erro(comentário não finalizado)" << endl;
         file_in.close();
-
-        bool result = ProcedimentoASD(tabela_simbolos, count_erros);
-
-        cout << "\n\n********* COMPILAÇÃO FINALIZADA *********" << endl;
-        if (result)
-            cout << "- Todas as cadeias processadas" << endl;
-        else
-            cout << "- Sobraram cadeias não processadas" << endl;
-
-        if (count_erros == 0)
-        {
-            cout << "- Sem erros" << endl;
-            return true;
-        }
-        else
-        {
-            cout << "- Número de erros mapeados: " << count_erros << endl;
-        }
     }
     else
     {
         cout << "erro na abertura do arquivo" << endl;
-        file_out << "erro na abertura do arquivo" << endl;
+        //file_out << "erro na abertura do arquivo" << endl;
+    }
+
+    printQueue(tabela_simbolos);
+
+
+    cout << "\n********* ANALISE SINTATICA *********" << endl;
+
+    bool result = ProcedimentoASD(tabela_simbolos, count_erros);
+    
+    printQueue(tabela_simbolos);
+
+
+    cout << "\n\n********* COMPILAÇÃO FINALIZADA *********" << endl;
+    if (result)
+        cout << "- Todas as cadeias processadas" << endl;
+    else
+        cout << "- Sobraram cadeias não processadas" << endl;
+
+    if (count_erros == 0)
+    {
+        cout << "- Sem erros" << endl;
+        return true;
+    }
+    else
+    {
+        cout << "- Número de erros mapeados: " << count_erros << endl;
     }
 
     file_out.close();
@@ -159,76 +162,12 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void token(string word)
+void printQueue(queue<Node> q)
 {
-    /* Descobrindo se o numero asc da primeira letra da palavra é um numero
-        e caso for, chama o automato que checa se é inteiro ou real*/
-    if ((int(*word.begin()) > 48) && (int(*word.begin()) < 57))
+    while (!q.empty())
     {
-        Numbers num(word);
-        bool flag_num;
-
-        //cout << "num" << endl;
-
-        flag_num = AutomatoNumInt(num, &name_token);
-        if (flag_num == false)
-            flag_num = AutomatoNumReal(num, &name_token);
-        if (flag_num == false)
-        {
-            ErroLexico(1, &msg_erro, &flag_erro, count_line, count_erros);
-            name_token = "num_real";
-        }
+        cout << q.front().getLine() << ") " << q.front().getWord() << " <=> " << q.front().getToken() << endl;
+        q.pop();
     }
-
-    /* Descobrindo se o numero asc da primeira letra da palavra é uma pontuacao
-        caso for, são chamados os automatos para reconhecer cada pontuação */
-    else if ((int(*word.begin()) >= 58 && int(*word.begin()) <= 62) ||
-             (int(*word.begin()) >= 40 && int(*word.begin()) <= 47))
-    {
-        Punctuation pont(word);
-        bool flag_pont;
-
-        //cout << "pont" << endl;
-
-        flag_pont = AutomatoPunct(pont, &name_token);
-    }
-
-    else if ((int(*word.begin()) >= 65 && int(*word.begin()) <= 95) ||
-             (int(*word.begin()) >= 97 && int(*word.begin()) <= 122) ||
-             (int(*word.begin()) >= 48 && int(*word.begin()) <= 57))
-    {
-        Reserved ident(word);
-        bool flag_ident;
-
-        //cout << "id" << endl;
-
-        flag_ident = AutomatoIdent(ident, &name_token);
-
-        if (flag_ident == false)
-        {
-            ErroLexico(2, &msg_erro, &flag_erro, count_line, count_erros);
-            name_token = "id";
-        }
-    }
-
-    else
-        ErroLexico(3, &msg_erro, &flag_erro, count_line, count_erros);
-
-    // Printar no terminal
-    /*if (flag_erro)
-        cout << "[Token " << count_tokens << "] " << word << ", " << msg_erro << endl;
-    else
-        cout << "[Token " << count_tokens << "] " << word << ", " << name_token << endl;*/
-
-    tabela_simbolos.push(Node(word, name_token, count_line));
-
-    // Salvar no arquivo
-    if (flag_erro)
-        file_out << word << ", " << name_token << " (" << msg_erro << ")" << endl;
-    else
-        file_out << word << ", " << name_token << endl;
-
-    count_tokens++;
-    name_token = "";
-    flag_erro = false;
+    cout << endl;
 }

@@ -49,24 +49,30 @@
 		| procedure ident <parametros> ; <corpo_p> <dc_c> <dc_v> <dc_p> begin <comandos> end
 		| begin <comandos> end
 
-4. <dc_c> ::= 	const ident = <tipo_var> ; <dc_c> 
+3. <dc_c> ::= 	const ident = <tipo_var> ; <dc_c> 
 		| λ
 
-5. <dc_v> ::= 	var <variaveis> : <tipo_var> ; <dc_v> 
+4. <dc_v> ::= 	var <variaveis> : <tipo_var> ; <dc_v> 
 		| λ
 
-6. <tipo_var> ::= real | integer
+5. <dc_p> ::= 	procedure ident ; <corpo_p> <dc_p> 
+		| procedure ident ( <lista_par> ) ; <dc_v> begin <comandos> end ; <dc_p> 
+		| procedure ident ( <lista_par> ) ; <dc_v> begin <comandos> end ; <dc_p>
+		| λ
 
-7. <variaveis> ::= ident  <var>
+6. <variaveis> ::= ident | ident , <variaveis> | λ
+
+7. <tipo_var> ::= real | integer
+
+8. <parametros> ::= ( <variaveis> : <tipo_var> <mais_par> ) | λ
+
+
 		
 
 <var> ::= λ | , <varivaeis>
 
 
-9. <dc_p> ::= 	procedure ident ; <corpo_p> <dc_p> 
-		| procedure ident ( <lista_par> ) ; <dc_v> begin <comandos> end ; <dc_p> 
-		| procedure ident ( <lista_par> ) ; <dc_v> begin <comandos> end ; <dc_p>
-		| λ
+
 
 
 11. <lista_par> ::= 	ident : real
