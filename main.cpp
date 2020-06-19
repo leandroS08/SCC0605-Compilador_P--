@@ -25,10 +25,11 @@ int main(int argc, char *argv[])
     char c;
     bool flag_2s = false; // flag para lidar com tokens que são símbolos de 2 caracteres (eg. <>, >=)
     bool flag_comment = false;
+    int line_comment_aux = 0;
 
     ifstream file_in(argv[1]); // Arquivo de entrada
 
-    ofstream file_out; // Arquivo de saída
+    ofstream file_out;                      // Arquivo de saída
     file_out.open("saida.txt", ios::trunc); // Cria o arquivo de saída
 
     if (file_in.is_open()) // Testa se o arquivo foi aberto corretamente
@@ -106,7 +107,10 @@ int main(int argc, char *argv[])
                     }
                     // Lida com comentários
                     else if ((flag_comment == false) && (c == '{'))
+                    {
+                        line_comment_aux = count_line;
                         flag_comment = true;
+                    }
                     else if ((flag_comment == true) && (c == '}'))
                         flag_comment = false;
                     // Caracteres normais
@@ -122,25 +126,33 @@ int main(int argc, char *argv[])
             count_line++;
         }
         if (flag_comment == true)
-            cout << "erro(comentário não finalizado)" << endl;
+        {
+            ofstream file_out;                
+            file_out.open("saida.txt", ios::app); 
+
+            file_out << "Erro lexico na linha "  << line_comment_aux << ": comentário não finalizado" << endl;
+
+            cout << "Erro lexico na linha " << line_comment_aux << ": comentário não finalizado" << endl;
+
+            file_out.close();
+
+            count_erros++;
+        }
+
         file_in.close();
     }
     else
-    {
-        cout << "erro na abertura do arquivo" << endl;
-        //file_out << "erro na abertura do arquivo" << endl;
-    }
+        cout << "Erro na abertura do arquivo" << endl;
 
-    printQueue(tabela_simbolos);
-
+    /* Caso seja necessario visualizar as cadeias geradas pelo léxicos */
+    //printQueue(tabela_simbolos);
 
     cout << "\n********* ANALISE SINTATICA *********" << endl;
 
     bool result = ProcedimentoASD(tabela_simbolos, count_erros);
-    
+
     /* Caso seja necessario visualizar as cadeias nao processadas */
     //printQueue(tabela_simbolos);
-
 
     cout << "\n\n********* COMPILAÇÃO FINALIZADA *********" << endl;
     if (result)

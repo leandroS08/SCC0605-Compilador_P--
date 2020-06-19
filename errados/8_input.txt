@@ -13,7 +13,7 @@ write(a);
 end
 else c:= a x;
 end;
-begin {programa principal}
+begin {programa principal
 read(b);
 nomep(b);
 end.
