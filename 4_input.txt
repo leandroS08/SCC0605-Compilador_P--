@@ -4,26 +4,27 @@ var a: real;
 var b: integer;
 
 procedure nomep(x : real);
+    begin
+        read(c, a);
 
-begin
-read(c, a);
+        if a<x+c then
+            begin
+                a:= c+x;
+                write(a);
+            end
+        else
+            begin
+                c:= a+x;
+            end;
 
-if a<x+c then
-begin
-a:= c+x;
-write(a);
-end
-else c:= a+x;
-
-for i:=1 to 10 do
-begin
-x:=x+i;
-write(x);
-end;
-
-end;
+        for i:=1 to 10 do
+            begin
+                x:=x+i;
+                write(x);
+            end;
+    end;
 
 begin {programa principal}
-read(b);
-nomep(b);
-end.
+    read(b);
+    nomep(b);
+end

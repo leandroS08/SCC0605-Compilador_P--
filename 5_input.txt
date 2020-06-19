@@ -1,4 +1,4 @@
-programa p--;
+programa p--
 {entrada}
 var a:integer;
 begin

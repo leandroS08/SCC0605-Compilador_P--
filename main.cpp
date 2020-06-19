@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
 
     bool result = ProcedimentoASD(tabela_simbolos, count_erros);
     
-    //printQueue(tabela_simbolos);
+    printQueue(tabela_simbolos);
 
 
     cout << "\n\n********* COMPILAÇÃO FINALIZADA *********" << endl;
