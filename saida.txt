@@ -1,1 +1,9 @@
-Erro sintatico na linha -1: faltando . na finalização do programa
+Erro lexico na linha 2: identificador irregular
+Erro lexico na linha 6: número irregular
+Erro lexico na linha 8: identificador irregular
+Erro lexico na linha 10: número irregular
+Erro sintatico na linha 1: estrutura de inicialização do programa com erros
+Erro sintatico na linha 1: faltando -> ; (aluno usp não faz isso...)
+Erro sintatico na linha 6: comando inválido
+Erro sintatico na linha 7: fator inválido
+Erro sintatico na linha 0: fator inválido

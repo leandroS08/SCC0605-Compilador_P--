@@ -110,7 +110,7 @@ bool ProcedimentoCorpo(queue<Node> &tabela)
         }
         else
         {
-            flag_panico = toEmPanico(tabela, id_panico);
+            flag_panico = newToEmPanico(tabela, 4);
             iter = tabela.front();
             if (iter.getToken().compare("simb_begin") == 0)
             {
@@ -120,6 +120,11 @@ bool ProcedimentoCorpo(queue<Node> &tabela)
             else if (iter.getToken().compare("simb_end") == 0)
             {
                 ErroSintatico(4, iter.getLine(), flag_erro);
+                wait_begin = true;
+            }
+            else
+            {
+                ErroSintatico(7, iter.getLine(), flag_erro);
                 wait_begin = true;
             }
         }

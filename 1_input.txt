@@ -10,7 +10,7 @@
 +
 : :: := ;= >= <= <> \ * - + - == := : ; < > > > 
 :=
-@
+@{ com}}
 @read
 re@d
 {Comentário Finalizado, com erro.
