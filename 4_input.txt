@@ -27,4 +27,4 @@ procedure nomep(x : real);
 begin {programa principal}
     read(b);
     nomep(b);
-end
+end.

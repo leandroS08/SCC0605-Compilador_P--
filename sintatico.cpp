@@ -794,8 +794,6 @@ bool ProcedimentoWhile(queue<Node> &tabela)
             if (iter.getToken().compare("simb_do") == 0)
             {
                 tabela.pop();
-
-                ProcedimentoComandos(tabela);
             }
             else
             {
@@ -814,6 +812,8 @@ bool ProcedimentoWhile(queue<Node> &tabela)
         ErroSintatico(13, iter.getLine(), flag_erro);
         flag_panico = toEmPanico(tabela, id_panico);
     }
+
+    ProcedimentoComandos(tabela);
 }
 
 bool ProcedimentoIf(queue<Node> &tabela)
@@ -842,6 +842,7 @@ bool ProcedimentoIf(queue<Node> &tabela)
     {
         ErroSintatico(14, iter.getLine(), flag_erro);
         flag_panico = toEmPanico(tabela, id_panico);
+        ProcedimentoComandos(tabela);
     }
 }
 
@@ -1239,7 +1240,7 @@ bool toEmPanico(queue<Node> &tabela, int id_panico)
     else if (id_panico == 9)
     {
         iter = tabela.front();
-        while (iter.getToken().compare("simb_apar") != 0 || iter.getToken().compare("simb_id") != 0 || iter.getToken().compare("num_real") != 0 || iter.getToken().compare("num_int") != 0)
+        while (iter.getToken().compare("simb_apar") != 0 && iter.getToken().compare("id") != 0 && iter.getToken().compare("num_real") != 0 && iter.getToken().compare("num_int") != 0)
         {
             tabela.pop();
             iter = tabela.front();
@@ -1266,6 +1267,20 @@ bool toEmPanico(queue<Node> &tabela, int id_panico)
     else if (id_panico == 11)
     {
         while (iter.getToken().compare("simb_to") != 0 && iter.getToken().compare("num_int") != 0 && iter.getToken().compare("num_real") != 0 && iter.getToken().compare("num_do") != 0 && iter.getToken().compare("simb_read") != 0 && iter.getToken().compare("simb_write") != 0 && iter.getToken().compare("simb_while") != 0 && iter.getToken().compare("simb_for") != 0 && iter.getToken().compare("simb_if") != 0 && iter.getToken().compare("simb_begin") != 0 && iter.getToken().compare("id") != 0)
+        {
+            tabela.pop();
+            iter = tabela.front();
+
+            if (tabela.empty())
+                return true;
+        }
+        return false;
+    }
+
+    else if (id_panico == 12)
+    {
+        iter = tabela.front();
+        while (iter.getToken().compare("simb_fpar") != 0 && iter.getToken().compare("simb_mult") != 0 && iter.getToken().compare("simb_div") != 0 && iter.getToken().compare("id") != 0 && iter.getToken().compare("simb_apar") != 0 && iter.getToken().compare("id") != 0 && iter.getToken().compare("num_real") != 0 && iter.getToken().compare("num_int") != 0)
         {
             tabela.pop();
             iter = tabela.front();
@@ -1325,7 +1340,7 @@ bool newToEmPanico(queue<Node> &tabela, int id_panico)
         break;
 
     case 3: // identificador ou pv
-        while (iter.getToken().compare("simb_id") != 0 && iter.getToken().compare("simb_pv") != 0 && iter.getToken().compare("simb_end") != 0 && iter.getToken().compare("simb_pont") != 0)
+        while (iter.getToken().compare("id") != 0 && iter.getToken().compare("simb_pv") != 0 && iter.getToken().compare("simb_end") != 0 && iter.getToken().compare("simb_pont") != 0)
         {
             tabela.pop();
             iter = tabela.front();
