@@ -3,7 +3,6 @@ var b: real;
 const A = @2;
 const B = 5;
 const C = 8;
-
 const C = 8;
 begin
 x := x +1;

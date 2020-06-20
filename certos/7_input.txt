@@ -1,0 +1,13 @@
+program p;
+var x: integer;
+procedure nomep(a:real);
+var y: integer;
+begin
+y:=a+2;
+if y<10 then
+nomep(y);
+end;
+begin
+read(x);
+nomep(x);
+end.

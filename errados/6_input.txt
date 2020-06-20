@@ -1,15 +1,13 @@
-program Nome1;
+program ;
 const A = 5;
 const D = 7.8;
 var b: real;
 var a, a1, b: integer;
-
-
 begin
 read(a);
 while (a1>0) do
 begin
-write(a1);
+write( );
 a1:= a1-1;
 end;
 if a<> b then write(a);

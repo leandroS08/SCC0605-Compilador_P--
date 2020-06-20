@@ -131,14 +131,15 @@ int main(int argc, char *argv[])
         //file_out << "erro na abertura do arquivo" << endl;
     }
 
-    //printQueue(tabela_simbolos);
+    printQueue(tabela_simbolos);
 
 
     cout << "\n********* ANALISE SINTATICA *********" << endl;
 
     bool result = ProcedimentoASD(tabela_simbolos, count_erros);
     
-    printQueue(tabela_simbolos);
+    /* Caso seja necessario visualizar as cadeias nao processadas */
+    //printQueue(tabela_simbolos);
 
 
     cout << "\n\n********* COMPILAÇÃO FINALIZADA *********" << endl;

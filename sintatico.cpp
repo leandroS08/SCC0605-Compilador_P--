@@ -101,6 +101,13 @@ bool ProcedimentoCorpo(queue<Node> &tabela)
         {
             ProcedimentoDProc(tabela);
         }
+        
+        if (tabela.empty())
+        {
+            ErroSintatico(4, iter.getLine(), flag_erro);
+            wait_begin = true;
+            return true;
+        }
 
         iter = tabela.front();
         if (iter.getToken().compare("simb_begin") == 0)
@@ -227,7 +234,7 @@ bool ProcedimentoDConst(queue<Node> &tabela)
         else if (iter.getToken().compare("simb_begin") == 0)
             continue;
 
-        else
+        else if(!tabela.empty())
         {
             ErroSintatico(7, iter.getLine(), flag_erro);
             flag_panico = toEmPanico(tabela, id_panico);
@@ -292,7 +299,7 @@ bool ProcedimentoDVar(queue<Node> &tabela)
         else if (iter.getToken().compare("simb_begin") == 0)
             continue;
 
-        else
+        else if(!tabela.empty())
         {
             ErroSintatico(7, iter.getLine(), flag_erro);
             flag_panico = toEmPanico(tabela, id_panico);
@@ -340,12 +347,13 @@ bool ProcedimentoDProc(queue<Node> &tabela)
             else
                 ErroSintatico(0, iter.getLine(), flag_erro);
         }
-        else
+        else if(!tabela.empty())
         {
             ErroSintatico(9, iter.getLine(), flag_erro);
             flag_panico = toEmPanico(tabela, id_panico);
             ProcedimentoCorpoProc(tabela);
         }
+        iter = tabela.front();
     }
 }
 
@@ -378,7 +386,7 @@ bool ProcedimentoVariaveis(queue<Node> &tabela)
             tabela.pop();
             iter = tabela.front();
         }
-        else
+        else if(!tabela.empty())
         {
             ErroSintatico(10, iter.getLine(), flag_erro);
             flag_panico = toEmPanico(tabela, id_panico);
@@ -617,17 +625,20 @@ bool ProcedimentoComandos(queue<Node> &tabela)
 
                 iter = tabela.front();
                 while (aux_mais == true)
-                {
+                {   
+                    iter = tabela.front();
                     if (iter.getToken().compare("id") == 0)
                     {
                         tabela.pop();
-
                         iter = tabela.front();
-                        if (iter.getToken().compare("simb_pv") == 0)
+                        if (iter.getToken().compare("simb_pv") == 0){
                             tabela.pop();
+                            iter = tabela.front();
+                        }
                         else if (iter.getToken().compare("simb_fpar") == 0)
                         {
                             tabela.pop();
+                            iter = tabela.front();
                             aux_mais = false;
                         }
                         else
@@ -651,9 +662,9 @@ bool ProcedimentoComandos(queue<Node> &tabela)
                     {
                         ErroSintatico(19, iter.getLine(), flag_erro);
                         flag_panico = newToEmPanico(tabela, 5);
+                        aux_mais = false;
                     }
                 }
-
                 tabela.pop();
             }
             else
@@ -822,10 +833,34 @@ bool ProcedimentoIf(queue<Node> &tabela)
     bool flag_erro = false;
     bool flag_panico = false;
     int id_panico = 10;
-
-    ProcedimentoCondicao(tabela);
-
     Node iter = tabela.front();
+
+    if (iter.getToken().compare("simb_apar") == 0)
+    {
+        tabela.pop();
+        ProcedimentoCondicao(tabela);
+        iter = tabela.front();
+
+        if (iter.getToken().compare("simb_fpar") == 0)
+        {
+            tabela.pop();
+            iter = tabela.front();
+        }
+        else
+        {
+            ErroSintatico(14, iter.getLine(), flag_erro);
+            flag_panico = toEmPanico(tabela, id_panico);
+            ProcedimentoComandos(tabela);
+        }
+    }
+
+    else
+    {
+        ProcedimentoCondicao(tabela);
+        iter = tabela.front();
+    }
+    
+
     if (iter.getToken().compare("simb_then") == 0)
     {
         tabela.pop();
@@ -885,17 +920,16 @@ bool ProcedimentoFor(queue<Node> &tabela)
         flag_panico = toEmPanico(tabela, 10);
     }
 
-    if(flag_panico == false) 
+    if (flag_panico == false)
     {
         ProcedimentoComandos(tabela);
         return true;
-    }   
+    }
     else
     {
         ErroSintatico(-1, iter.getLine(), flag_erro); // não conseguiu recuperar a compilação do código
         return false;
     }
-    
 }
 
 bool ProcedimentoAtribuicao(queue<Node> &tabela)
@@ -944,7 +978,7 @@ bool ProcedimentoCondicao(queue<Node> &tabela)
     ProcedimentoExpressao(tabela);
 
     Node iter = tabela.front();
-    if (iter.getToken().compare("simb_igual") == 0 || iter.getToken().compare("simb_dif") || iter.getToken().compare("simb_maig") == 0 || iter.getToken().compare("simb_meig") == 0 || iter.getToken().compare("simb_maior") == 0 || iter.getToken().compare("simb_menor") == 0)
+    if (iter.getToken().compare("simb_igual") == 0 || iter.getToken().compare("simb_dif") == 0|| iter.getToken().compare("simb_maig") == 0 || iter.getToken().compare("simb_meig") == 0 || iter.getToken().compare("simb_maior") == 0 || iter.getToken().compare("simb_menor") == 0)
         tabela.pop();
     else
     {
@@ -1066,7 +1100,7 @@ bool ErroSintatico(int erro, int line, bool &flag)
 
     case 0:
         msg_erro = "faltando -> ; (aluno usp não faz isso...)";
-        line = line -1;
+        line = line - 1;
         break;
 
     case 1:

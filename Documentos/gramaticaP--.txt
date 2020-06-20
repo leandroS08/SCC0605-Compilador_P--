@@ -36,5 +36,5 @@
 29. <op_mul> ::= * | /
 30. <fator> ::= ident | <numero> | ( <expressao> )
 31. <numero> ::= numero_int | numero_real
-32. <atribuicao> ::= <variavel> := <numero> /********** questionar se variavel pode so receber numero, tipo, nao receber outra variavel <variavel> := <variavel>
+32. <atribuicao> ::= <variavel> := <numero> 
 33. <variavel> ::= ident

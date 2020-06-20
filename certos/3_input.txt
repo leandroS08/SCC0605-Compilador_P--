@@ -1,0 +1,13 @@
+program exemplo2;
+var a, b: integer;
+var c: real;
+begin
+read(a,b);
+c:=5;
+while (a<b) do
+begin
+a:=a+1;
+c:=c*a;
+end;
+write(c,d);
+end.

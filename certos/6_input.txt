@@ -1,0 +1,23 @@
+program p;
+var x: integer;
+procedure nomep(a:real);
+var y: integer;
+begin
+y:=1;
+end;
+procedure teste(b,c:real);
+var d: integer;
+begin
+d:=1;
+if(b>c) then
+begin
+b:=b-c;
+c:=2;
+end;
+end;
+begin
+read(x);
+nomep(x);
+teste(x;y);
+write(x);
+end.
