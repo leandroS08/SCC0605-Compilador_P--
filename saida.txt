@@ -1,7 +1,0 @@
-Erro lexico na linha 16: comentário não finalizado
-Erro sintatico na linha 3: estrutura de declaração de variável inválida
-Erro sintatico na linha 4: estrutura de declaração de variável inválida
-Erro sintatico na linha 5: estrutura declaração de procedimento inválida
-Erro sintatico na linha 14: comando inválido
-Erro sintatico na linha 16: faltando -> begin
-Erro sintatico na linha -1: faltando . na finalização do programa
